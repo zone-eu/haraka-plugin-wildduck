@@ -88,7 +88,7 @@ jobs:
               with:
                   images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
                   flavor: |
-                      latest=auto
+                      latest=false
                   tags: |
                       type=semver,pattern={{version}},value=v${{needs.release_please.outputs.major}}.${{needs.release_please.outputs.minor}}.${{needs.release_please.outputs.patch}}
                       type=semver,pattern={{major}}.{{minor}},value=v${{needs.release_please.outputs.major}}.${{needs.release_please.outputs.minor}}.${{needs.release_please.outputs.patch}}

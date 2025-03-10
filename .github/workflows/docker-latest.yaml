@@ -33,11 +33,22 @@ jobs:
                   username: ${{ github.repository_owner }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Build and push
-              uses: docker/build-push-action@v5
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+                  flavor: |
+                      latest=false
+                  tags: |
+                      type=raw,value=latest
+
+            - name: Build and push Docker image
+              id: push
+              uses: docker/build-push-action@v6
               with:
                   context: .
-                  platforms: ${{ steps.buildx.outputs.platforms }}
                   push: true
-                  tags: |
-                      ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+                  platforms: ${{ steps.buildx.outputs.platforms }}
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}

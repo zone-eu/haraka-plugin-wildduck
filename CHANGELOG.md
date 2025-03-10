@@ -1,5 +1,15 @@
 # Changelog
 
+## [5.8.19](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.18...v5.8.19) (2025-03-10)
+
+
+### Bug Fixes
+
+* **docker-workflows:** ZMS-180-3 ([#59](https://github.com/zone-eu/haraka-plugin-wildduck/issues/59)) ([e31d83c](https://github.com/zone-eu/haraka-plugin-wildduck/commit/e31d83c2a6ef2cb1a057ebdeda5dcde4ef6122e8))
+* **docker-workflow:** update docker workflows. Use docker-metadata actions. Remove image attestation ZMS-205 ([#61](https://github.com/zone-eu/haraka-plugin-wildduck/issues/61)) ([f4cff17](https://github.com/zone-eu/haraka-plugin-wildduck/commit/f4cff17732a98b7f40818ef65233c04e37a97728))
+* **update-package.json-dockerfile:** Update dockerfile and package.json ZMS-180 ([#57](https://github.com/zone-eu/haraka-plugin-wildduck/issues/57)) ([7e6b193](https://github.com/zone-eu/haraka-plugin-wildduck/commit/7e6b193117b5992d9d8de41f5252278a67abf8f5))
+* **workflows-arm/v7-remove:** remove linux/arm/v7 from built images ([#60](https://github.com/zone-eu/haraka-plugin-wildduck/issues/60)) ([e93d1f5](https://github.com/zone-eu/haraka-plugin-wildduck/commit/e93d1f55f55aaafd086fe301875a6c5551651b65))
+
 ## [5.8.18](https://github.com/nodemailer/haraka-plugin-wildduck/compare/v5.8.17...v5.8.18) (2025-01-30)
 
 

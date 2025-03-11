@@ -8,8 +8,33 @@ on:
     push:
         branches:
             - master
+
 jobs:
+    check_commit:
+        runs-on: ubuntu-latest
+        outputs:
+            should_run: ${{ steps.check_commit_message.outputs.should_run }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 2
+
+            - name: Check commit message
+              id: check_commit_message
+              run: |
+                  COMMIT_MSG=$(git log -1 --pretty=%s)
+                  if [[ "$COMMIT_MSG" == chore* ]]; then
+                    echo "should_run=false" >> $GITHUB_OUTPUT
+                    echo "Skipping workflow for commit: $COMMIT_MSG"
+                  else
+                    echo "should_run=true" >> $GITHUB_OUTPUT
+                    echo "Running workflow for commit: $COMMIT_MSG"
+                  fi
+
     docker:
+        needs: check_commit
+        if: ${{ needs.check_commit.outputs.should_run == 'true' }}
         runs-on: ubuntu-latest
         steps:
             - name: Checkout

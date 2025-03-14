@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.8.20](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.19...v5.8.20) (2025-03-12)
+
+
+### Bug Fixes
+
+* **docker-workflows:** On release do not push duplicate latest ZMS-205 ([#62](https://github.com/zone-eu/haraka-plugin-wildduck/issues/62)) ([eea1465](https://github.com/zone-eu/haraka-plugin-wildduck/commit/eea14658bf33197ff071cf89d69ceff1f65202de))
+* **mta-relay:** add support for mtaRelay ZMS-171 ([#56](https://github.com/zone-eu/haraka-plugin-wildduck/issues/56)) ([7aee2df](https://github.com/zone-eu/haraka-plugin-wildduck/commit/7aee2df44e722e48834ba2f9b013768655c9eb66))
+
 ## [5.8.19](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.18...v5.8.19) (2025-03-10)
 
 

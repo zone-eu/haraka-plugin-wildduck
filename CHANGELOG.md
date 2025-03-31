@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.21](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.20...v5.8.21) (2025-03-31)
+
+
+### Bug Fixes
+
+* fix dockerfile ([#64](https://github.com/zone-eu/haraka-plugin-wildduck/issues/64)) ([ad592ef](https://github.com/zone-eu/haraka-plugin-wildduck/commit/ad592ef33a3b087d85263c4f98ac45652d991b1e))
+
 ## [5.8.20](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.19...v5.8.20) (2025-03-12)
 
 

@@ -1387,6 +1387,13 @@ exports.hook_queue = function (next, connection) {
             const userData = rcptData.userData;
 
             connection.logdebug(plugin, 'Filtering message for ' + recipient);
+
+            sendLogEntry({
+                short_message: '[MX FILTER-HANDLER] Started storing message',
+                _user: userData._id.toString(),
+                _to: recipient
+            });
+
             try {
                 const { response, prepared: preparedResponse } = await plugin.filterHandler.storeMessage(userData, {
                     mimeTree: prepared && prepared.mimeTree,
@@ -1411,6 +1418,12 @@ exports.hook_queue = function (next, connection) {
                         spamAction: rspamd ? rspamd.action : false,
                         time: new Date()
                     }
+                });
+
+                sendLogEntry({
+                    short_message: '[MX FILTER-HANDLER] Finished storing message',
+                    _user: userData._id.toString(),
+                    _to: recipient
                 });
 
                 if (!prepared && preparedResponse) {
@@ -1635,6 +1648,10 @@ exports.hook_queue = function (next, connection) {
         }
 
         await updateRateLimits();
+
+        sendLogEntry({
+            short_message: '[MX RATE-LIMITS] Updated rate limits'
+        });
 
         return [OK, 'Message processed'];
     };

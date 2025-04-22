@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.23](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.22...v5.8.23) (2025-04-22)
+
+
+### Bug Fixes
+
+* **logging:** add more verbose gelf logging ([#69](https://github.com/zone-eu/haraka-plugin-wildduck/issues/69)) ([b6e720c](https://github.com/zone-eu/haraka-plugin-wildduck/commit/b6e720cd737ca9080cb0e5bb042a5bee51e76ca9))
+
 ## [5.8.22](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.21...v5.8.22) (2025-03-31)
 
 

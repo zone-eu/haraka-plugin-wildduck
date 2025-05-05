@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.24](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.23...v5.8.24) (2025-05-02)
+
+
+### Bug Fixes
+
+* ZMS-216: Bump deps ([#71](https://github.com/zone-eu/haraka-plugin-wildduck/issues/71)) ([1acf5bc](https://github.com/zone-eu/haraka-plugin-wildduck/commit/1acf5bc089f0dd1814c28171d0832bf19f85081f))
+
 ## [5.8.23](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.22...v5.8.23) (2025-04-22)
 
 

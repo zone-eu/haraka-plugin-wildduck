@@ -340,7 +340,8 @@ exports.handle_forwarding_address = async function (connection, address, address
         resolution: {
             _forward: 'yes',
             _rcpt_accepted: 'yes',
-            _forward_to: forwardTargets.join('\n') || 'empty_list'
+            _forward_to: forwardTargets.join('\n') || 'empty_list',
+            _address: addressData.address
         }
     };
 };

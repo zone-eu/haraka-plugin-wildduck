@@ -31,23 +31,23 @@
     "devDependencies": {
         "eslint": "9.25.1",
         "eslint-config-nodemailer": "1.2.0",
-        "eslint-config-prettier": "10.1.5",
-        "@haraka/eslint-config": "2.0.2",
+        "eslint-config-prettier": "10.1.8",
+        "@haraka/eslint-config": "2.0.3",
         "grunt": "1.6.1",
         "grunt-cli": "1.5.0",
         "grunt-eslint": "24.3.0",
-        "npm-check-updates": "18.0.1"
+        "npm-check-updates": "18.0.2"
     },
     "dependencies": {
         "gelf": "2.0.1",
         "haraka-dsn": "1.1.0",
-        "ioredis": "5.6.1",
-        "libmime": "5.3.6",
+        "ioredis": "5.7.0",
+        "libmime": "5.3.7",
         "mailauth": "4.8.6",
         "mongodb": "4.17.0",
-        "nodemailer": "7.0.3",
+        "nodemailer": "7.0.5",
         "punycode.js": "2.3.1",
         "srs.js": "0.1.0",
-        "wildduck": "1.45.7"
+        "wildduck": "1.45.11"
     }
 }

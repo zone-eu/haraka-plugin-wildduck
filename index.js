@@ -507,7 +507,12 @@ exports.init_wildduck_transaction = async function (connection) {
         .join('');
 
     try {
-        txn.notes.settings = await this.db.settingsHandler.getMulti(['const:max:storage', 'const:max:recipients', 'const:max:forwards']);
+        txn.notes.settings = await this.db.settingsHandler.getMulti([
+            'const:max:storage',
+            'const:max:recipients',
+            'const:max:forwards',
+            'const:domaincache:enabled'
+        ]);
     } catch (err) {
         connection.logerror(this, err);
     }
@@ -762,198 +767,230 @@ exports.real_rcpt_handler = function (next, connection, params) {
         });
     };
 
-    plugin.db.userHandler.resolveAddress(
-        address,
-        {
-            wildcard: true,
-            projection: {
-                name: true,
-                address: true,
-                addrview: true,
-                forwards: true,
-                autoreply: true,
-                targets: true, // only forwarded address has `targets` set
-                forwardedDisabled: true // only forwarded address has `targets` set
+    const resolveAddress = () => {
+        plugin.db.userHandler.resolveAddress(
+            address,
+            {
+                wildcard: true,
+                projection: {
+                    name: true,
+                    address: true,
+                    addrview: true,
+                    forwards: true,
+                    autoreply: true,
+                    targets: true, // only forwarded address has `targets` set
+                    forwardedDisabled: true // only forwarded address has `targets` set
+                }
+            },
+            (err, addressData) => {
+                if (err) {
+                    resolution = {
+                        full_message: err.stack,
+                        _api: 'resolveAddress',
+                        _db_query: 'address:' + address,
+
+                        _error: 'failed to resolve an address',
+                        _failure: 'yes',
+                        _err_code: err.code
+                    };
+                    err.code = err.code || 'ResolveAddress';
+                    return hookDone(err);
+                }
+
+                if (addressData && addressData.address && addressData.address.includes('*')) {
+                    // wildcard/catchall address received email
+                    const originalRcptHeaderName = plugin.cfg?.originalRcptHeader || 'X-Original-Rcpt';
+                    txn.add_header(originalRcptHeaderName, address);
+                }
+
+                if (addressData && addressData.targets) {
+                    return plugin
+                        .handle_forwarding_address(connection, address, addressData)
+                        .then(result => {
+                            if (result && result.resolution) {
+                                resolution = result.resolution;
+                            }
+                            hookDone(OK);
+                        })
+                        .catch(err => {
+                            if (err.resolution) {
+                                resolution = err.resolution;
+                            }
+                            if (err.responseAction) {
+                                return hookDone(err.responseAction, err.responseMessage || err);
+                            } else {
+                                return hookDone(err);
+                            }
+                        });
+                }
+
+                if (!addressData || !addressData.user) {
+                    connection.logdebug(plugin, 'No such user ' + address);
+                    resolution = {
+                        _error: 'no such user',
+                        _unknown_user: 'yes'
+                    };
+                    txn.notes.rejectCode = 'NO_SUCH_USER';
+                    return hookDone(DENY, DSN.no_such_user());
+                }
+
+                plugin.db.userHandler.get(
+                    addressData.user,
+                    {
+                        // extra fields are needed later in the filtering step
+                        name: true,
+                        address: true,
+                        forwards: true,
+                        receivedMax: true,
+                        targets: true,
+                        autoreply: true,
+                        encryptMessages: true,
+                        encryptForwarded: true,
+                        pubKey: true,
+                        spamLevel: true,
+                        storageUsed: true,
+                        quota: true,
+                        tagsview: true,
+                        mtaRelay: true
+                    },
+                    (err, userData) => {
+                        if (err) {
+                            resolution = {
+                                full_message: err.stack,
+                                _api: 'getUser',
+                                _db_query: 'user:' + addressData.user,
+
+                                _error: 'failed to fetch user',
+                                _failure: 'yes',
+                                _err_code: err.code
+                            };
+                            err.code = err.code || 'GetUserData';
+                            return hookDone(err);
+                        }
+
+                        if (!userData) {
+                            resolution = {
+                                _error: 'no such user',
+                                _unknown_user: 'yes'
+                            };
+                            txn.notes.rejectCode = 'NO_SUCH_USER';
+                            return hookDone(DENY, DSN.no_such_user());
+                        }
+
+                        if (userData.disabled) {
+                            // user is disabled for whatever reason
+                            resolution = {
+                                _user: userData._id.toString(),
+                                _error: 'disabled user',
+                                _disabled_user: 'yes'
+                            };
+                            txn.notes.rejectCode = 'MBOX_DISABLED';
+                            return hookDone(DENY, DSN.mbox_disabled());
+                        }
+
+                        // max quota for the user
+                        const quota = userData.quota || txn.notes.settings['const:max:storage'];
+                        if (userData.storageUsed && quota <= userData.storageUsed) {
+                            // can not deliver mail to this user, over quota
+                            resolution = {
+                                _user: userData._id.toString(),
+                                _error: 'user over quota',
+                                _over_quota: 'yes',
+                                _max_quota: quota,
+                                _quota_source: userData.quota ? 'user' : 'config',
+                                _storage_used: userData.storageUsed,
+                                _default_address: rcpt.address() !== userData.address ? userData.address : ''
+                            };
+                            txn.notes.rejectCode = 'MBOX_FULL';
+                            return hookDone(DENY, DSN.mbox_full_554());
+                        }
+
+                        checkIpRateLimit(userData, () => {
+                            const key = userData._id.toString();
+                            const selector = 'rcpt';
+                            plugin.checkRateLimit(connection, selector, key, userData.receivedMax, (err, success) => {
+                                if (err) {
+                                    resolution = {
+                                        full_message: err.stack,
+                                        _rate_limit: 'yes',
+                                        _selector: selector,
+                                        _user: userData._id.toString(),
+                                        _default_address: rcpt.address() !== userData.address ? userData.address : '',
+
+                                        _error: 'rate limit check failed',
+                                        _failure: 'yes',
+                                        _err_code: err.code
+                                    };
+                                    err.code = err.code || 'RateLimit';
+                                    return hookDone(err);
+                                }
+
+                                if (!success) {
+                                    resolution = {
+                                        _rate_limit: 'yes',
+                                        _selector: selector,
+                                        _error: 'too many attempts',
+                                        _user: userData._id.toString(),
+                                        _default_address: rcpt.address() !== userData.address ? userData.address : ''
+                                    };
+                                    txn.notes.rejectCode = 'RATE_LIMIT';
+                                    return hookDone(DENYSOFT, DSN.rcpt_too_fast());
+                                }
+
+                                connection.loginfo(plugin, 'RESOLVED rcpt=' + rcpt.address() + ' user=' + userData.address + '[' + userData._id + ']');
+
+                                // update rate limit for this address after delivery
+                                txn.notes.rateKeys.push({ selector, key, limit: userData.receivedMax });
+
+                                users.set(userData._id.toString(), {
+                                    userData,
+                                    recipient: rcpt.address()
+                                });
+
+                                resolution = {
+                                    _user: userData._id.toString(),
+                                    _rcpt_accepted: 'yes',
+                                    _default_address: rcpt.address() !== userData.address ? userData.address : ''
+                                };
+                                txn.notes.rejectCode = false;
+                                hookDone(OK);
+                            });
+                        });
+                    }
+                );
             }
-        },
-        (err, addressData) => {
+        );
+    };
+
+    if (txn.notes.settings['const:domaincache:enabled']) {
+        // Domain cache is enabled
+        const addressDomain = address.split('@')[1];
+
+        plugin.db.users.collection('domaincache').findOne({ domain: addressDomain }, { projection: { _id: 1 } }, (err, data) => {
             if (err) {
                 resolution = {
                     full_message: err.stack,
-                    _api: 'resolveAddress',
-                    _db_query: 'address:' + address,
+                    _api: 'getDomaincache',
+                    _db_query: 'domain:' + address,
 
-                    _error: 'failed to resolve an address',
+                    _error: 'failed to resolve domain in domain cache',
                     _failure: 'yes',
                     _err_code: err.code
                 };
-                err.code = err.code || 'ResolveAddress';
+                err.code = err.code || 'GetDomainCache';
                 return hookDone(err);
             }
 
-            if (addressData && addressData.address && addressData.address.includes('*')) {
-                // wildcard/catchall address received email
-                const originalRcptHeaderName = plugin.cfg?.originalRcptHeader || 'X-Original-Rcpt';
-                txn.add_header(originalRcptHeaderName, address);
+            if (!data) {
+                // domain not found
+                return hookDone(DENY, DSN.addr_bad_dest_syntax());
             }
 
-            if (addressData && addressData.targets) {
-                return plugin
-                    .handle_forwarding_address(connection, address, addressData)
-                    .then(result => {
-                        if (result && result.resolution) {
-                            resolution = result.resolution;
-                        }
-                        hookDone(OK);
-                    })
-                    .catch(err => {
-                        if (err.resolution) {
-                            resolution = err.resolution;
-                        }
-                        if (err.responseAction) {
-                            return hookDone(err.responseAction, err.responseMessage || err);
-                        } else {
-                            return hookDone(err);
-                        }
-                    });
-            }
-
-            if (!addressData || !addressData.user) {
-                connection.logdebug(plugin, 'No such user ' + address);
-                resolution = {
-                    _error: 'no such user',
-                    _unknown_user: 'yes'
-                };
-                txn.notes.rejectCode = 'NO_SUCH_USER';
-                return hookDone(DENY, DSN.no_such_user());
-            }
-
-            plugin.db.userHandler.get(
-                addressData.user,
-                {
-                    // extra fields are needed later in the filtering step
-                    name: true,
-                    address: true,
-                    forwards: true,
-                    receivedMax: true,
-                    targets: true,
-                    autoreply: true,
-                    encryptMessages: true,
-                    encryptForwarded: true,
-                    pubKey: true,
-                    spamLevel: true,
-                    storageUsed: true,
-                    quota: true,
-                    tagsview: true,
-                    mtaRelay: true
-                },
-                (err, userData) => {
-                    if (err) {
-                        resolution = {
-                            full_message: err.stack,
-                            _api: 'getUser',
-                            _db_query: 'user:' + addressData.user,
-
-                            _error: 'failed to fetch user',
-                            _failure: 'yes',
-                            _err_code: err.code
-                        };
-                        err.code = err.code || 'GetUserData';
-                        return hookDone(err);
-                    }
-
-                    if (!userData) {
-                        resolution = {
-                            _error: 'no such user',
-                            _unknown_user: 'yes'
-                        };
-                        txn.notes.rejectCode = 'NO_SUCH_USER';
-                        return hookDone(DENY, DSN.no_such_user());
-                    }
-
-                    if (userData.disabled) {
-                        // user is disabled for whatever reason
-                        resolution = {
-                            _user: userData._id.toString(),
-                            _error: 'disabled user',
-                            _disabled_user: 'yes'
-                        };
-                        txn.notes.rejectCode = 'MBOX_DISABLED';
-                        return hookDone(DENY, DSN.mbox_disabled());
-                    }
-
-                    // max quota for the user
-                    const quota = userData.quota || txn.notes.settings['const:max:storage'];
-                    if (userData.storageUsed && quota <= userData.storageUsed) {
-                        // can not deliver mail to this user, over quota
-                        resolution = {
-                            _user: userData._id.toString(),
-                            _error: 'user over quota',
-                            _over_quota: 'yes',
-                            _max_quota: quota,
-                            _quota_source: userData.quota ? 'user' : 'config',
-                            _storage_used: userData.storageUsed,
-                            _default_address: rcpt.address() !== userData.address ? userData.address : ''
-                        };
-                        txn.notes.rejectCode = 'MBOX_FULL';
-                        return hookDone(DENY, DSN.mbox_full_554());
-                    }
-
-                    checkIpRateLimit(userData, () => {
-                        const key = userData._id.toString();
-                        const selector = 'rcpt';
-                        plugin.checkRateLimit(connection, selector, key, userData.receivedMax, (err, success) => {
-                            if (err) {
-                                resolution = {
-                                    full_message: err.stack,
-                                    _rate_limit: 'yes',
-                                    _selector: selector,
-                                    _user: userData._id.toString(),
-                                    _default_address: rcpt.address() !== userData.address ? userData.address : '',
-
-                                    _error: 'rate limit check failed',
-                                    _failure: 'yes',
-                                    _err_code: err.code
-                                };
-                                err.code = err.code || 'RateLimit';
-                                return hookDone(err);
-                            }
-
-                            if (!success) {
-                                resolution = {
-                                    _rate_limit: 'yes',
-                                    _selector: selector,
-                                    _error: 'too many attempts',
-                                    _user: userData._id.toString(),
-                                    _default_address: rcpt.address() !== userData.address ? userData.address : ''
-                                };
-                                txn.notes.rejectCode = 'RATE_LIMIT';
-                                return hookDone(DENYSOFT, DSN.rcpt_too_fast());
-                            }
-
-                            connection.loginfo(plugin, 'RESOLVED rcpt=' + rcpt.address() + ' user=' + userData.address + '[' + userData._id + ']');
-
-                            // update rate limit for this address after delivery
-                            txn.notes.rateKeys.push({ selector, key, limit: userData.receivedMax });
-
-                            users.set(userData._id.toString(), {
-                                userData,
-                                recipient: rcpt.address()
-                            });
-
-                            resolution = {
-                                _user: userData._id.toString(),
-                                _rcpt_accepted: 'yes',
-                                _default_address: rcpt.address() !== userData.address ? userData.address : ''
-                            };
-                            txn.notes.rejectCode = false;
-                            hookDone(OK);
-                        });
-                    });
-                }
-            );
-        }
-    );
+            return resolveAddress();
+        });
+    } else {
+        resolveAddress();
+    }
 };
 
 exports.hook_queue = function (next, connection) {

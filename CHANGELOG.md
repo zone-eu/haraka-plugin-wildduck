@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.26](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.25...v5.8.26) (2025-08-03)
+
+
+### Bug Fixes
+
+* **domaincache:** ZMS-247 Use domaincache to filter incoming addresses ([#76](https://github.com/zone-eu/haraka-plugin-wildduck/issues/76)) ([da023aa](https://github.com/zone-eu/haraka-plugin-wildduck/commit/da023aa11e77a8b4d4d83c3b34af46666a9aef20))
+
 ## [5.8.25](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.24...v5.8.25) (2025-06-09)
 
 

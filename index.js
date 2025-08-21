@@ -1069,8 +1069,8 @@ exports.hook_queue = function (next, connection) {
     }
 
     // BIMI
-    if (txn.notes.bimiResult?.status?.result === 'pass') {
-        verificationResults.bimi = txn.notes.bimiResult;
+    if (txn.notes.bimiResult?.status?.result === 'pass' && txn.notes?.bimi) {
+        verificationResults.bimi = txn.notes.bimi;
     }
 
     const messageId = (txn.header.get('Message-Id') || '').toString();
@@ -1149,57 +1149,6 @@ exports.hook_queue = function (next, connection) {
     referencedUsers.forEach(user => {
         allowAutoreply.add(user.userData._id.toString());
     });
-
-    const handleBimi = async () => {
-        if (verificationResults.bimi) {
-            // fetch BIMI logo
-            const bimiResolution = {
-                short_message: `[BIMI] ${verificationResults.bimi.status?.header?.d}`,
-                _queue_id: queueId,
-                _bimi_domain: verificationResults.bimi.status?.header?.d
-            };
-
-            try {
-                const bimiData = await plugin.bimiHandler.getInfo(verificationResults.bimi);
-                if (bimiData?._id) {
-                    verificationResults.bimi = bimiData?._id;
-
-                    bimiResolution._has_bimi = 'yes';
-                    bimiResolution._bimi_cached_id = bimiData?._id.toString();
-                    bimiResolution._bimi_type = bimiData?.type;
-                    bimiResolution._bimi_url = bimiData?.url;
-                    bimiResolution._bimi_source = bimiData?.source;
-
-                    if (bimiData.vmc && bimiData.vmc.logoFile) {
-                        txn.add_header('BIMI-Indicator', bimiData.vmc.logoFile);
-                    }
-                } else {
-                    verificationResults.bimi = false;
-                    bimiResolution._has_bimi = 'no';
-                }
-            } catch (err) {
-                //connection.logerror(plugin, 'Failed to get BIMI logo: ' + err.stack);
-                verificationResults.bimi = false;
-
-                bimiResolution._failure = 'yes';
-                bimiResolution._error = err.message;
-                bimiResolution._err = err.code;
-
-                bimiResolution._bimi_source = err.source;
-
-                if (err.details && err.details.url) {
-                    bimiResolution._bimi_url = err.details.url;
-                    delete err.details.url;
-                }
-
-                if (err.details) {
-                    bimiResolution._bimi_data = JSON.stringify(err.details);
-                }
-            } finally {
-                plugin.loggelf(bimiResolution);
-            }
-        }
-    };
 
     const forwardMessage = done => {
         if (!forwards.size) {
@@ -1700,33 +1649,31 @@ exports.hook_queue = function (next, connection) {
         return [OK, 'Message processed'];
     };
 
-    handleBimi().finally(() => {
-        // try to forward the message. If forwarding is not needed then continues immediately
-        forwardMessage(() => {
-            // send autoreplies to forwarded addresses (if needed)
-            sendAutoreplies()
-                .catch(err => {
-                    connection.logerror(plugin, 'AUTOREPLY error=' + err.message);
-                })
-                .finally(() => {
-                    storeMessages()
-                        .then(args => next(...args))
-                        .catch(err => {
-                            // should not happen, just in case
-                            sendLogEntry({
-                                full_message: err.stack,
-                                _no_store: 'yes',
-                                _error: 'failed to store message',
-                                _failure: 'yes',
-                                _err_code: err.code
-                            });
-
-                            connection.loginfo(plugin, 'DEFERRED error=' + err.message);
-                            txn.notes.rejectCode = 'ERRQ06';
-                            next(DENYSOFT, 'Failed to queue message [ERRQ06]');
+    // try to forward the message. If forwarding is not needed then continues immediately
+    forwardMessage(() => {
+        // send autoreplies to forwarded addresses (if needed)
+        sendAutoreplies()
+            .catch(err => {
+                connection.logerror(plugin, 'AUTOREPLY error=' + err.message);
+            })
+            .finally(() => {
+                storeMessages()
+                    .then(args => next(...args))
+                    .catch(err => {
+                        // should not happen, just in case
+                        sendLogEntry({
+                            full_message: err.stack,
+                            _no_store: 'yes',
+                            _error: 'failed to store message',
+                            _failure: 'yes',
+                            _err_code: err.code
                         });
-                });
-        });
+
+                        connection.loginfo(plugin, 'DEFERRED error=' + err.message);
+                        txn.notes.rejectCode = 'ERRQ06';
+                        next(DENYSOFT, 'Failed to queue message [ERRQ06]');
+                    });
+            });
     });
 };
 

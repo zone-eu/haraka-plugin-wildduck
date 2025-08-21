@@ -1170,7 +1170,9 @@ exports.hook_queue = function (next, connection) {
                     bimiResolution._bimi_url = bimiData?.url;
                     bimiResolution._bimi_source = bimiData?.source;
 
-                    txn.add_header('BIMI-Indicator', bimiData.vmc.logoFile);
+                    if (bimiData.vmc && bimiData.vmc.logoFile) {
+                        txn.add_header('BIMI-Indicator', bimiData.vmc.logoFile);
+                    }
                 } else {
                     verificationResults.bimi = false;
                     bimiResolution._has_bimi = 'no';

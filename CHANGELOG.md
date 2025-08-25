@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.27](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.26...v5.8.27) (2025-08-25)
+
+
+### Bug Fixes
+
+* **bimi-headers:** ZMS-246: Add additional BIMI headers, BIMI-Location and BIMI-Indicator ([#78](https://github.com/zone-eu/haraka-plugin-wildduck/issues/78)) ([0609085](https://github.com/zone-eu/haraka-plugin-wildduck/commit/060908540d572b4ea2424e1e7beabfe40556bdf7))
+
 ## [5.8.26](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.25...v5.8.26) (2025-08-03)
 
 

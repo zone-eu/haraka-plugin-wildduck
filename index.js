@@ -1120,27 +1120,25 @@ exports.hook_queue = function (next, connection) {
 
     const collector = new StreamCollect({ plugin, connection });
 
-    const collectData = async () => {
-        return new Promise((resolve, reject) => {
-            // buffer message chunks by draining the stream
-            collector.on('data', () => false); //just drain
-            txn.message_stream.once('error', err => collector.emit('error', err));
-            collector.once('end', () => resolve(true));
+    const collectData = done => {
+        // buffer message chunks by draining the stream
+        collector.on('data', () => false); //just drain
+        txn.message_stream.once('error', err => collector.emit('error', err));
+        collector.once('end', done);
 
-            collector.once('error', err => {
-                connection.logerror(plugin, 'PIPEFAIL error=' + err.message);
-                sendLogEntry({
-                    full_message: err.stack,
-                    _error: 'pipefail processing input',
-                    _failure: 'yes',
-                    _err_code: err.code
-                });
-                txn.notes.rejectCode = 'ERRQ01';
-                reject(new Error('Failed to queue message [ERRQ01]'));
+        collector.once('error', err => {
+            connection.logerror(plugin, 'PIPEFAIL error=' + err.message);
+            sendLogEntry({
+                full_message: err.stack,
+                _error: 'pipefail processing input',
+                _failure: 'yes',
+                _err_code: err.code
             });
-
-            txn.message_stream.pipe(collector);
+            txn.notes.rejectCode = 'ERRQ01';
+            return next(DENYSOFT, 'Failed to queue message [ERRQ01]');
         });
+
+        txn.message_stream.pipe(collector);
     };
 
     const referencedUsers = plugin.getReferencedUsers(txn);
@@ -1152,10 +1150,10 @@ exports.hook_queue = function (next, connection) {
         allowAutoreply.add(user.userData._id.toString());
     });
 
-    const forwardMessage = async () => {
+    const forwardMessage = done => {
         if (!forwards.size) {
             // the message does not need forwarding at this point
-            return await collectData();
+            return collectData(done);
         }
 
         const rspamd = txn.results.get('rspamd');
@@ -1178,7 +1176,7 @@ exports.hook_queue = function (next, connection) {
 
             sendLogEntry(message);
 
-            return await collectData();
+            return collectData(done);
         }
 
         const targets =
@@ -1215,82 +1213,78 @@ exports.hook_queue = function (next, connection) {
             mail.mtaRelay = user.mtaRelay || false;
         }
 
-        return new Promise((resolve, reject) => {
-            let returnInfo;
-
-            const message = plugin.maildrop.push(mail, async (err, ...args) => {
-                if (err || !args[0]) {
-                    if (err) {
-                        err.code = err.code || 'ERRCOMPOSE';
-                        sendLogEntry({
-                            short_message: '[Failed forward] ' + queueId,
-                            full_message: err.stack,
-
-                            _error: 'failed to store message',
-                            _mail_action: 'forward',
-                            _failure: 'yes',
-                            _err_code: err.code
-                        });
-                    }
-                    returnInfo = [err, ...args];
-                    return;
-                }
-
-                sendLogEntry({
-                    short_message: '[Queued forward] ' + queueId,
-                    _mail_action: 'forward',
-                    _target_queue_id: args[0].id,
-                    _target_address: targets.map(target => ((target && target.value) || target).toString().replace(/\?.*$/, '')).join('\n')
-                });
-
-                plugin.loggelf({
-                    _queue_id: args[0].id,
-
-                    short_message: '[QUEUED] ' + args[0].id,
-
-                    _parent_queue_id: queueId,
-                    _from: txn.notes.sender,
-                    _to: targets.map(target => ((target && target.value) || target).toString().replace(/\?.*$/, '')).join('\n'),
-
-                    _queued: 'yes',
-                    _forwarded: 'yes',
-
-                    _interface: 'mx'
-                });
-
-                connection.loginfo(plugin, 'QUEUED FORWARD queue-id=' + args[0].id);
-
-                try {
-                    if (txn.notes.targets && txn.notes.targets.forwardCounters) {
-                        await plugin.increment_forward_counters(connection);
-                    }
-                } catch (err) {
-                    connection.logerror(plugin, err.message);
-                }
-                returnInfo = [err, args && args[0] && args[0].id];
-            });
-
-            if (message) {
-                txn.message_stream.once('error', err => message.emit('error', err));
-                message.once('error', err => {
-                    connection.logerror(plugin, 'QUEUEERROR Failed to retrieve message. error=' + err.message);
+        const message = plugin.maildrop.push(mail, (err, ...args) => {
+            if (err || !args[0]) {
+                if (err) {
+                    err.code = err.code || 'ERRCOMPOSE';
                     sendLogEntry({
+                        short_message: '[Failed forward] ' + queueId,
                         full_message: err.stack,
 
-                        _error: 'failed to retrieve message from input',
+                        _error: 'failed to store message',
+                        _mail_action: 'forward',
                         _failure: 'yes',
                         _err_code: err.code
                     });
-                    txn.notes.rejectCode = 'ERRQ04';
-                    return reject(new Error('Failed to queue message [ERRQ04]'));
-                });
-
-                message.once('end', () => resolve(returnInfo || true));
-
-                // pipe the message to the collector object to gather message chunks for further processing
-                txn.message_stream.pipe(collector).pipe(message);
+                }
+                return done(err, ...args);
             }
+
+            sendLogEntry({
+                short_message: '[Queued forward] ' + queueId,
+                _mail_action: 'forward',
+                _target_queue_id: args[0].id,
+                _target_address: targets.map(target => ((target && target.value) || target).toString().replace(/\?.*$/, '')).join('\n')
+            });
+
+            plugin.loggelf({
+                _queue_id: args[0].id,
+
+                short_message: '[QUEUED] ' + args[0].id,
+
+                _parent_queue_id: queueId,
+                _from: txn.notes.sender,
+                _to: targets.map(target => ((target && target.value) || target).toString().replace(/\?.*$/, '')).join('\n'),
+
+                _queued: 'yes',
+                _forwarded: 'yes',
+
+                _interface: 'mx'
+            });
+
+            connection.loginfo(plugin, 'QUEUED FORWARD queue-id=' + args[0].id);
+
+            const next = () => done(err, args && args[0] && args[0].id);
+            if (txn.notes.targets && txn.notes.targets.forwardCounters) {
+                return plugin
+                    .increment_forward_counters(connection)
+                    .then(next)
+                    .catch(err => {
+                        connection.logerror(plugin, err.message);
+                        next();
+                    });
+            }
+            next();
         });
+
+        if (message) {
+            txn.message_stream.once('error', err => message.emit('error', err));
+            message.once('error', err => {
+                connection.logerror(plugin, 'QUEUEERROR Failed to retrieve message. error=' + err.message);
+                sendLogEntry({
+                    full_message: err.stack,
+
+                    _error: 'failed to retrieve message from input',
+                    _failure: 'yes',
+                    _err_code: err.code
+                });
+                txn.notes.rejectCode = 'ERRQ04';
+                return next(DENYSOFT, 'Failed to queue message [ERRQ04]');
+            });
+
+            // pipe the message to the collector object to gather message chunks for further processing
+            txn.message_stream.pipe(collector).pipe(message);
+        }
     };
 
     const sendAutoreplies = async () => {
@@ -1655,41 +1649,32 @@ exports.hook_queue = function (next, connection) {
         return [OK, 'Message processed'];
     };
 
-    const processQueue = async () => {
-        try {
-            await forwardMessage();
-        } catch (err) {
-            return [DENYSOFT, err.message];
-        }
+    // try to forward the message. If forwarding is not needed then continues immediately
+    forwardMessage(() => {
+        // send autoreplies to forwarded addresses (if needed)
+        sendAutoreplies()
+            .catch(err => {
+                connection.logerror(plugin, 'AUTOREPLY error=' + err.message);
+            })
+            .finally(() => {
+                storeMessages()
+                    .then(args => next(...args))
+                    .catch(err => {
+                        // should not happen, just in case
+                        sendLogEntry({
+                            full_message: err.stack,
+                            _no_store: 'yes',
+                            _error: 'failed to store message',
+                            _failure: 'yes',
+                            _err_code: err.code
+                        });
 
-        try {
-            await sendAutoreplies();
-        } catch (err) {
-            connection.logerror(plugin, 'AUTOREPLY error=' + err.message);
-        }
-
-        try {
-            return await storeMessages();
-        } catch (err) {
-            sendLogEntry({
-                full_message: err.stack,
-                _no_store: 'yes',
-                _error: 'failed to store message',
-                _failure: 'yes',
-                _err_code: err.code
+                        connection.loginfo(plugin, 'DEFERRED error=' + err.message);
+                        txn.notes.rejectCode = 'ERRQ06';
+                        next(DENYSOFT, 'Failed to queue message [ERRQ06]');
+                    });
             });
-
-            connection.loginfo(plugin, 'DEFERRED error=' + err.message);
-            txn.notes.rejectCode = 'ERRQ06';
-            return [DENYSOFT, 'Failed to queue message [ERRQ06]'];
-        }
-    };
-
-    processQueue()
-        .then(result => {
-            next(...result);
-        })
-        .catch(() => {});
+    });
 };
 
 // Rate limit is checked on RCPT TO

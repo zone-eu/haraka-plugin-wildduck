@@ -1082,7 +1082,7 @@ exports.hook_queue = function (next, connection) {
 
             try {
                 subject = libmime.decodeWords(subject).trim();
-            } catch (E) {
+            } catch {
                 // failed to parse value
             }
 
@@ -1120,8 +1120,8 @@ exports.hook_queue = function (next, connection) {
 
     const collector = new StreamCollect({ plugin, connection });
 
-    const collectData = async () => {
-        return new Promise((resolve, reject) => {
+    const collectData = async () =>
+        new Promise((resolve, reject) => {
             // buffer message chunks by draining the stream
             collector.on('data', () => false); //just drain
             txn.message_stream.once('error', err => collector.emit('error', err));
@@ -1141,7 +1141,6 @@ exports.hook_queue = function (next, connection) {
 
             txn.message_stream.pipe(collector);
         });
-    };
 
     const referencedUsers = plugin.getReferencedUsers(txn);
 
@@ -1758,7 +1757,7 @@ exports.getHeaderFrom = function (txn) {
                         if (address.name) {
                             address.name = libmime.decodeWords(address.name).trim();
                         }
-                    } catch (E) {
+                    } catch {
                         // failed to parse value
                     }
                     fromAddresses.set(uview, { address: normalized, provided: address });

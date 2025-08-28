@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.8.28](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.27...v5.8.28) (2025-08-28)
+
+
+### Bug Fixes
+
+* bump deps ([#82](https://github.com/zone-eu/haraka-plugin-wildduck/issues/82)) ([829c2af](https://github.com/zone-eu/haraka-plugin-wildduck/commit/829c2af3df685c77a51e105e5f834b35790d1590))
+* **hook_queue:** ZMS-258 hook_queue, use only async function inside ([#80](https://github.com/zone-eu/haraka-plugin-wildduck/issues/80)) ([ff23e7b](https://github.com/zone-eu/haraka-plugin-wildduck/commit/ff23e7b3d6623c8bc21360fb84f338749b6989c9))
+
 ## [5.8.27](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.26...v5.8.27) (2025-08-25)
 
 

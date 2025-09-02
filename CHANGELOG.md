@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.29](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.28...v5.8.29) (2025-09-02)
+
+
+### Bug Fixes
+
+* ZMS-262 validateTagValueRecord on bimi-location ([#83](https://github.com/zone-eu/haraka-plugin-wildduck/issues/83)) ([a119852](https://github.com/zone-eu/haraka-plugin-wildduck/commit/a119852fec6e6bcd46fb711ce88da08842855eaf))
+
 ## [5.8.28](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.27...v5.8.28) (2025-08-28)
 
 

@@ -971,7 +971,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                 resolution = {
                     full_message: err.stack,
                     _api: 'getDomaincache',
-                    _db_query: 'domain:' + address,
+                    _db_query: 'domain:' + addressDomain,
 
                     _error: 'failed to resolve domain in domain cache',
                     _failure: 'yes',
@@ -982,8 +982,16 @@ exports.real_rcpt_handler = function (next, connection, params) {
             }
 
             if (!data) {
+                resolution = {
+                    _api: 'getDomaincache',
+                    _db_query: 'domain:' + addressDomain,
+
+                    _error: 'domain not found in domain cache',
+                    _failure: 'yes'
+                };
+
                 // domain not found
-                return hookDone(DENY, DSN.addr_bad_dest_syntax());
+                return hookDone(DENY, DSN.addr_bad_dest_mbox());
             }
 
             return resolveAddress();

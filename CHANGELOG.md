@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.30](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.29...v5.8.30) (2025-09-11)
+
+
+### Bug Fixes
+
+* **domaincache:** ZMS-266: domaincache, improve logging ([#85](https://github.com/zone-eu/haraka-plugin-wildduck/issues/85)) ([fe3e572](https://github.com/zone-eu/haraka-plugin-wildduck/commit/fe3e572f4dc64b7cae299e6052d6e9ecd488656c))
+
 ## [5.8.29](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.28...v5.8.29) (2025-09-02)
 
 

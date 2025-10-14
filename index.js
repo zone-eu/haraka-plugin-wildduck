@@ -22,6 +22,7 @@ const Gelf = require('gelf');
 const addressparser = require('nodemailer/lib/addressparser');
 const libmime = require('libmime');
 const { promisify } = require('util');
+const plugins = require('wildduck/lib/plugins');
 
 const { mail: hookMail, dataPost: hookDataPost } = require('./lib/hooks');
 
@@ -135,6 +136,16 @@ exports.open_database = function (next, server) {
                 messageHandler: plugin.db.messageHandler,
                 loggelf: message => plugin.loggelf(message)
             });
+
+            if (plugin.cfg.plugins && plugin.cfg.plugins.pluginsPath && plugin.cfg.plugins.conf) {
+                const config = plugin.cfg;
+                config.log = plugin.cfg.gelf; // plugins handler expects gelf as the `log` config option
+
+                plugins.init({ context: 'receiver', config });
+                plugins.handler.load(() => {
+                    plugins.handler.runHooks('init', [], () => {});
+                });
+            }
 
             plugin.bimiHandler = BimiHandler.create({
                 database: db.database,

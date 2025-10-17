@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.32](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.31...v5.8.32) (2025-10-17)
+
+
+### Bug Fixes
+
+* ZMSA-1: update release workflow ([#91](https://github.com/zone-eu/haraka-plugin-wildduck/issues/91)) ([01b522a](https://github.com/zone-eu/haraka-plugin-wildduck/commit/01b522a822460e34dce10963035af8b55028061f))
+
 ## [5.8.31](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.30...v5.8.31) (2025-10-17)
 
 

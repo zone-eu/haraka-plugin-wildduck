@@ -10,7 +10,7 @@ This plugin:
 
 ```sh
 cd /path/to/local/haraka
-npm install haraka-plugin-wildduck
+npm install @zone-eu/haraka-plugin-wildduck
 echo "wildduck" >> config/plugins
 service haraka restart
 ```
@@ -22,7 +22,7 @@ WildDuck plugin should be placed last in the plugins file.
 This plugin expects MongoDB settings to be set. By default, it uses unauthenticated localhost. If you need to use more specific settings then create your own configuration file:
 
 ```sh
-cp node_modules/haraka-plugin-wildduck/config/wildduck.ini config/wildduck.ini
+cp node_modules/@zone-eu/haraka-plugin-wildduck/config/wildduck.ini config/wildduck.ini
 $EDITOR config/wildduck.ini
 ```
 
@@ -38,4 +38,4 @@ This plugin includes SPF and DKIM support. You should not enable Haraka's built-
 
 European Union Public License 1.1 ([details](http://ec.europa.eu/idabc/eupl.html)) or later
 
-> WildDuck plugin for Haraka (`haraka-plugin-wildduck`) is part of the Zone Mail Suite (ZMS). Suite of programs and modules for an efficient, fast and modern email server.
+> WildDuck plugin for Haraka (`@zone-eu/haraka-plugin-wildduck`) is part of the Zone Mail Suite (ZMS). Suite of programs and modules for an efficient, fast and modern email server.

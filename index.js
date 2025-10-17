@@ -10,19 +10,19 @@ const dns = require('dns');
 const ObjectId = require('mongodb').ObjectId;
 const punycode = require('punycode.js');
 const SRS = require('srs.js');
-const counters = require('wildduck/lib/counters');
-const tools = require('wildduck/lib/tools');
+const counters = require('@zone-eu/wildduck/lib/counters');
+const tools = require('@zone-eu/wildduck/lib/tools');
 const StreamCollect = require('./lib/stream-collect');
-const Maildropper = require('wildduck/lib/maildropper');
-const FilterHandler = require('wildduck/lib/filter-handler');
-const BimiHandler = require('wildduck/lib/bimi-handler');
-const autoreply = require('wildduck/lib/autoreply');
-const wdErrors = require('wildduck/lib/errors');
+const Maildropper = require('@zone-eu/wildduck/lib/maildropper');
+const FilterHandler = require('@zone-eu/wildduck/lib/filter-handler');
+const BimiHandler = require('@zone-eu/wildduck/lib/bimi-handler');
+const autoreply = require('@zone-eu/wildduck/lib/autoreply');
+const wdErrors = require('@zone-eu/wildduck/lib/errors');
 const Gelf = require('gelf');
 const addressparser = require('nodemailer/lib/addressparser');
 const libmime = require('libmime');
 const { promisify } = require('util');
-const plugins = require('wildduck/lib/plugins');
+const plugins = require('@zone-eu/wildduck/lib/plugins');
 
 const { mail: hookMail, dataPost: hookDataPost } = require('./lib/hooks');
 

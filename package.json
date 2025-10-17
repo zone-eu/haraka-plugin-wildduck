@@ -1,6 +1,6 @@
 {
     "name": "@zone-eu/haraka-plugin-wildduck",
-    "version": "5.8.31",
+    "version": "5.8.32",
     "description": "Haraka plugin for processing incoming messages for the WildDuck IMAP server",
     "main": "index.js",
     "scripts": {

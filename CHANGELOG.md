@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.8.31](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.30...v5.8.31) (2025-10-17)
+
+
+### Bug Fixes
+
+* **plugins:** ZMS-269: load WD plugins if specified in config ([#88](https://github.com/zone-eu/haraka-plugin-wildduck/issues/88)) ([9aed0d5](https://github.com/zone-eu/haraka-plugin-wildduck/commit/9aed0d5046627b0c8b4cc8017fb3cc0b6daa5ca7))
+* ZMSA-1: scope package, update deps ([#89](https://github.com/zone-eu/haraka-plugin-wildduck/issues/89)) ([d63b445](https://github.com/zone-eu/haraka-plugin-wildduck/commit/d63b445d1d6d1c7e2180346d5778331bd8b0f6c1))
+
 ## [5.8.30](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.29...v5.8.30) (2025-09-11)
 
 

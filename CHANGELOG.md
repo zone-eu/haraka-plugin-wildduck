@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.33](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.32...v5.8.33) (2025-11-03)
+
+
+### Bug Fixes
+
+* ZMS-279: unscope package ([#94](https://github.com/zone-eu/haraka-plugin-wildduck/issues/94)) ([6b01835](https://github.com/zone-eu/haraka-plugin-wildduck/commit/6b01835ba3b8b57b579c961a6a71aff1206f7230))
+
 ## [5.8.32](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.31...v5.8.32) (2025-10-17)
 
 

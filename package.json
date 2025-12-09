@@ -39,14 +39,14 @@
         "npm-check-updates": "19.1.2"
     },
     "dependencies": {
-        "@zone-eu/wildduck": "1.46.5",
+        "@zone-eu/wildduck": "1.46.12",
         "gelf": "2.0.1",
         "haraka-dsn": "1.1.0",
         "ioredis": "5.8.2",
         "libmime": "5.3.7",
         "mailauth": "4.11.0",
         "mongodb": "4.17.0",
-        "nodemailer": "7.0.10",
+        "nodemailer": "7.0.11",
         "punycode.js": "2.3.1",
         "srs.js": "0.1.0"
     }

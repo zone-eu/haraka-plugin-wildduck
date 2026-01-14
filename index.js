@@ -1412,6 +1412,7 @@ exports.hook_queue = function (next, connection) {
             });
 
             try {
+                const start = Date.now();
                 const { response, prepared: preparedResponse } = await plugin.filterHandler.storeMessage(userData, {
                     mimeTree: prepared && prepared.mimeTree,
                     maildata: prepared && prepared.maildata,
@@ -1440,7 +1441,8 @@ exports.hook_queue = function (next, connection) {
                 sendLogEntry({
                     short_message: '[MX FILTER-HANDLER] Finished storing message',
                     _user: userData._id.toString(),
-                    _to: recipient
+                    _to: recipient,
+                    _elapsed: start - Date.now()
                 });
 
                 if (!prepared && preparedResponse) {

@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.8.35](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.34...v5.8.35) (2026-01-22)
+
+
+### Bug Fixes
+
+* **logging:** ZMSA-58: add elapsed time to storing message for benchmarking ([#99](https://github.com/zone-eu/haraka-plugin-wildduck/issues/99)) ([2c2435e](https://github.com/zone-eu/haraka-plugin-wildduck/commit/2c2435e958dfd9922a4cccc6489380ba82737561))
+* **logging:** ZMSA-63: _stored: yes log also log stored msg size, bump deps ([#102](https://github.com/zone-eu/haraka-plugin-wildduck/issues/102)) ([43b0990](https://github.com/zone-eu/haraka-plugin-wildduck/commit/43b09906f3940141d318a08bc8404f4b30d9ff83))
+
 ## [5.8.34](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.33...v5.8.34) (2025-12-09)
 
 

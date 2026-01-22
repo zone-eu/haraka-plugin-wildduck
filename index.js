@@ -1631,7 +1631,8 @@ exports.hook_queue = function (next, connection) {
                         _stored_path: targetMailbox && targetMailbox.path,
                         _stored_uid: targetMailbox && targetMailbox.uid,
 
-                        _stored_id: targetId
+                        _stored_id: targetId,
+                        _stored_size: response.size
                     });
 
                     connection.loginfo(plugin, 'STORED rcpt=' + recipient + ' user=' + userData.address + '[' + userData._id + '] result=' + response.response);

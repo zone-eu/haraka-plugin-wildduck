@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.8.36](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.35...v5.8.36) (2026-01-30)
+
+
+### Bug Fixes
+
+* **deps:** bump deps ([#104](https://github.com/zone-eu/haraka-plugin-wildduck/issues/104)) ([f1bfa40](https://github.com/zone-eu/haraka-plugin-wildduck/commit/f1bfa403aca5aba0a680e843af3b01d82ab45167))
+* **logging-autoreply:** ZMSA-65: Loggelf autoreply error ([#103](https://github.com/zone-eu/haraka-plugin-wildduck/issues/103)) ([3c8356d](https://github.com/zone-eu/haraka-plugin-wildduck/commit/3c8356d6b4c9d94f11ad3306c7a0277ddfab8b33))
+
 ## [5.8.35](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.34...v5.8.35) (2026-01-22)
 
 

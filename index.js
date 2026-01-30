@@ -1380,6 +1380,17 @@ exports.hook_queue = function (next, connection) {
                 connection.loginfo(plugin, 'QUEUED AUTOREPLY target=' + txn.notes.sender + ' queue-id=' + result.id);
             } catch (err) {
                 connection.lognotice(plugin, 'AUTOREPLY ERROR target=' + txn.notes.sender + ' error=' + err.message);
+                sendLogEntry({
+                    short_message: '[Autoreply error] ' + queueId,
+                    _mail_action: 'autoreply',
+                    _target_address: addressData.address,
+                    _parent_queue_id: queueId,
+                    _from: addressData.address,
+                    _to: addressData.address,
+                    _failure: 'yes',
+                    _error: err.message,
+                    _err_code: err.code
+                });
             }
         }
     };

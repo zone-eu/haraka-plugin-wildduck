@@ -241,7 +241,8 @@ exports.handle_forwarding_address = async function (connection, address, address
     } catch (err) {
         // failed checks
         err.resolution = {
-            full_message: err.stack,
+            _stack: err.stack,
+            level: 4,
             _forward: 'yes',
             _rate_limit: 'yes',
             _selector: 'user',
@@ -674,7 +675,8 @@ exports.real_rcpt_handler = function (next, connection, params) {
         } catch (err) {
             connection.logerror(plugin, 'SRS FAILED rcpt=' + address + ' error=' + err.message);
             resolution = {
-                full_message: err.stack,
+                _stack: err.stack,
+                level: 5,
                 _srs: 'yes',
 
                 _failure: 'yes',
@@ -692,7 +694,8 @@ exports.real_rcpt_handler = function (next, connection, params) {
             return plugin.checkRateLimit(connection, selector, key, false, (err, success) => {
                 if (err) {
                     resolution = {
-                        full_message: err.stack,
+                        _stack: err.stack,
+                        level: 4,
                         _srs: 'yes',
                         _rate_limit: 'yes',
                         _selector: selector,
@@ -745,7 +748,8 @@ exports.real_rcpt_handler = function (next, connection, params) {
         plugin.checkRateLimit(connection, selector, key, false, (err, success) => {
             if (err) {
                 resolution = {
-                    full_message: err.stack,
+                    _stack: err.stack,
+                    level: 4,
                     _rate_limit: 'yes',
                     _selector: selector,
                     _user: userData._id.toString(),
@@ -797,6 +801,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                 if (err) {
                     resolution = {
                         full_message: err.stack,
+                        level: 3,
                         _api: 'resolveAddress',
                         _db_query: 'address:' + address,
 
@@ -868,6 +873,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                         if (err) {
                             resolution = {
                                 full_message: err.stack,
+                                level: 3,
                                 _api: 'getUser',
                                 _db_query: 'user:' + addressData.user,
 
@@ -922,7 +928,8 @@ exports.real_rcpt_handler = function (next, connection, params) {
                             plugin.checkRateLimit(connection, selector, key, userData.receivedMax, (err, success) => {
                                 if (err) {
                                     resolution = {
-                                        full_message: err.stack,
+                                        _stack: err.stack,
+                                        level: 4,
                                         _rate_limit: 'yes',
                                         _selector: selector,
                                         _user: userData._id.toString(),
@@ -980,7 +987,8 @@ exports.real_rcpt_handler = function (next, connection, params) {
         plugin.db.users.collection('domaincache').findOne({ domain: addressDomain }, { projection: { _id: 1 } }, (err, data) => {
             if (err) {
                 resolution = {
-                    full_message: err.stack,
+                    _stack: err.stack,
+                    level: 4,
                     _api: 'getDomaincache',
                     _db_query: 'domain:' + addressDomain,
 
@@ -1150,6 +1158,7 @@ exports.hook_queue = function (next, connection) {
                 connection.logerror(plugin, 'PIPEFAIL error=' + err.message);
                 sendLogEntry({
                     full_message: err.stack,
+                    level: 3,
                     _error: 'pipefail processing input',
                     _failure: 'yes',
                     _err_code: err.code
@@ -1242,7 +1251,8 @@ exports.hook_queue = function (next, connection) {
                         err.code = err.code || 'ERRCOMPOSE';
                         sendLogEntry({
                             short_message: '[Failed forward] ' + queueId,
-                            full_message: err.stack,
+                            _stack: err.stack,
+                            level: 4,
 
                             _error: 'failed to store message',
                             _mail_action: 'forward',
@@ -1293,7 +1303,8 @@ exports.hook_queue = function (next, connection) {
                 message.once('error', err => {
                     connection.logerror(plugin, 'QUEUEERROR Failed to retrieve message. error=' + err.message);
                     sendLogEntry({
-                        full_message: err.stack,
+                        _stack: err.stack,
+                        level: 4,
 
                         _error: 'failed to retrieve message from input',
                         _failure: 'yes',
@@ -1584,7 +1595,8 @@ exports.hook_queue = function (next, connection) {
 
                     if (response.error.code === 'DroppedByPolicy') {
                         sendLogEntry({
-                            full_message: response.error.message,
+                            _stack: response.error.message,
+                            level: 6,
 
                             _user: userData._id.toString(),
                             _to: recipient,
@@ -1607,6 +1619,7 @@ exports.hook_queue = function (next, connection) {
                     } else {
                         sendLogEntry({
                             full_message: response.error.stack,
+                            level: 3,
 
                             _user: userData._id.toString(),
                             _to: recipient,
@@ -1651,6 +1664,7 @@ exports.hook_queue = function (next, connection) {
             } catch (err) {
                 sendLogEntry({
                     full_message: err.stack,
+                    level: 2,
 
                     _user: userData._id.toString(),
                     _address: recipient,
@@ -1705,6 +1719,7 @@ exports.hook_queue = function (next, connection) {
         } catch (err) {
             sendLogEntry({
                 full_message: err.stack,
+                level: 2,
                 _no_store: 'yes',
                 _error: 'failed to store message',
                 _failure: 'yes',

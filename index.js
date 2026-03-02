@@ -242,13 +242,12 @@ exports.handle_forwarding_address = async function (connection, address, address
         // failed checks
         err.resolution = {
             _stack: err.stack,
-            level: 4,
             _forward: 'yes',
             _rate_limit: 'yes',
             _selector: 'user',
 
             _failure: 'yes',
-            _error: 'rate limit check failed',
+            _failure_msg: 'rate limit check failed',
             _err_code: err.code
         };
         err.code = err.code || 'RateLimit';
@@ -676,11 +675,10 @@ exports.real_rcpt_handler = function (next, connection, params) {
             connection.logerror(plugin, 'SRS FAILED rcpt=' + address + ' error=' + err.message);
             resolution = {
                 _stack: err.stack,
-                level: 5,
                 _srs: 'yes',
 
                 _failure: 'yes',
-                _error: 'srs check failed',
+                _failure_msg: 'srs check failed',
                 _err_code: err.code
             };
             txn.notes.rejectCode = 'NO_SUCH_USER';
@@ -695,13 +693,12 @@ exports.real_rcpt_handler = function (next, connection, params) {
                 if (err) {
                     resolution = {
                         _stack: err.stack,
-                        level: 4,
                         _srs: 'yes',
                         _rate_limit: 'yes',
                         _selector: selector,
 
                         _failure: 'yes',
-                        _error: 'rate limit check failed',
+                        _failure_msg: 'rate limit check failed',
                         _err_code: err.code
                     };
                     err.code = err.code || 'RateLimit';
@@ -749,13 +746,12 @@ exports.real_rcpt_handler = function (next, connection, params) {
             if (err) {
                 resolution = {
                     _stack: err.stack,
-                    level: 4,
                     _rate_limit: 'yes',
                     _selector: selector,
                     _user: userData._id.toString(),
                     _default_address: rcpt.address() !== userData.address ? userData.address : '',
 
-                    _error: 'rate limit check failed',
+                    _failure_msg: 'rate limit check failed',
                     _failure: 'yes',
                     _err_code: err.code
                 };
@@ -801,11 +797,10 @@ exports.real_rcpt_handler = function (next, connection, params) {
                 if (err) {
                     resolution = {
                         full_message: err.stack,
-                        level: 3,
                         _api: 'resolveAddress',
                         _db_query: 'address:' + address,
 
-                        _error: 'failed to resolve an address',
+                        _failure_msg: 'failed to resolve an address',
                         _failure: 'yes',
                         _err_code: err.code
                     };
@@ -873,7 +868,6 @@ exports.real_rcpt_handler = function (next, connection, params) {
                         if (err) {
                             resolution = {
                                 full_message: err.stack,
-                                level: 3,
                                 _api: 'getUser',
                                 _db_query: 'user:' + addressData.user,
 
@@ -929,13 +923,12 @@ exports.real_rcpt_handler = function (next, connection, params) {
                                 if (err) {
                                     resolution = {
                                         _stack: err.stack,
-                                        level: 4,
                                         _rate_limit: 'yes',
                                         _selector: selector,
                                         _user: userData._id.toString(),
                                         _default_address: rcpt.address() !== userData.address ? userData.address : '',
 
-                                        _error: 'rate limit check failed',
+                                        _failure_msg: 'rate limit check failed',
                                         _failure: 'yes',
                                         _err_code: err.code
                                     };
@@ -988,11 +981,10 @@ exports.real_rcpt_handler = function (next, connection, params) {
             if (err) {
                 resolution = {
                     _stack: err.stack,
-                    level: 4,
                     _api: 'getDomaincache',
                     _db_query: 'domain:' + addressDomain,
 
-                    _error: 'failed to resolve domain in domain cache',
+                    _failure_msg: 'failed to resolve domain in domain cache',
                     _failure: 'yes',
                     _err_code: err.code
                 };
@@ -1158,7 +1150,6 @@ exports.hook_queue = function (next, connection) {
                 connection.logerror(plugin, 'PIPEFAIL error=' + err.message);
                 sendLogEntry({
                     full_message: err.stack,
-                    level: 3,
                     _error: 'pipefail processing input',
                     _failure: 'yes',
                     _err_code: err.code
@@ -1252,9 +1243,8 @@ exports.hook_queue = function (next, connection) {
                         sendLogEntry({
                             short_message: '[Failed forward] ' + queueId,
                             _stack: err.stack,
-                            level: 4,
 
-                            _error: 'failed to store message',
+                            _failure_msg: 'failed to store message',
                             _mail_action: 'forward',
                             _failure: 'yes',
                             _err_code: err.code
@@ -1303,8 +1293,7 @@ exports.hook_queue = function (next, connection) {
                 message.once('error', err => {
                     connection.logerror(plugin, 'QUEUEERROR Failed to retrieve message. error=' + err.message);
                     sendLogEntry({
-                        _stack: err.stack,
-                        level: 4,
+                        full_message: err.stack,
 
                         _error: 'failed to retrieve message from input',
                         _failure: 'yes',
@@ -1596,7 +1585,6 @@ exports.hook_queue = function (next, connection) {
                     if (response.error.code === 'DroppedByPolicy') {
                         sendLogEntry({
                             _stack: response.error.message,
-                            level: 6,
 
                             _user: userData._id.toString(),
                             _to: recipient,
@@ -1605,7 +1593,7 @@ exports.hook_queue = function (next, connection) {
                             _filters_matching: matchingFilters ? matchingFilters.join('\n') : '',
 
                             _no_store: 'yes',
-                            _error: 'message dropped',
+                            _failure_msg: 'message dropped',
                             _dropped: 'yes',
                             _err_code: response.error.code
                         });
@@ -1619,7 +1607,6 @@ exports.hook_queue = function (next, connection) {
                     } else {
                         sendLogEntry({
                             full_message: response.error.stack,
-                            level: 3,
 
                             _user: userData._id.toString(),
                             _to: recipient,
@@ -1664,7 +1651,6 @@ exports.hook_queue = function (next, connection) {
             } catch (err) {
                 sendLogEntry({
                     full_message: err.stack,
-                    level: 2,
 
                     _user: userData._id.toString(),
                     _address: recipient,
@@ -1719,7 +1705,6 @@ exports.hook_queue = function (next, connection) {
         } catch (err) {
             sendLogEntry({
                 full_message: err.stack,
-                level: 2,
                 _no_store: 'yes',
                 _error: 'failed to store message',
                 _failure: 'yes',

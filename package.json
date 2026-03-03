@@ -36,15 +36,15 @@
         "grunt": "1.6.1",
         "grunt-cli": "1.5.0",
         "grunt-eslint": "24.3.0",
-        "npm-check-updates": "19.3.2"
+        "npm-check-updates": "19.6.3"
     },
     "dependencies": {
-        "@zone-eu/wildduck": "1.46.20",
+        "@zone-eu/wildduck": "1.46.23",
         "gelf": "2.0.1",
         "haraka-dsn": "1.1.0",
-        "ioredis": "5.9.2",
+        "ioredis": "5.10.0",
         "libmime": "5.3.7",
-        "mailauth": "4.12.0",
+        "mailauth": "4.13.0",
         "mongodb": "4.17.0",
         "nodemailer": "7.0.13",
         "punycode.js": "2.3.1",

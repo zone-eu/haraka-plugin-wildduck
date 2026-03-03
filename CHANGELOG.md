@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.8.37](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.36...v5.8.37) (2026-03-03)
+
+
+### Bug Fixes
+
+* bump deps ([#112](https://github.com/zone-eu/haraka-plugin-wildduck/issues/112)) ([ccda470](https://github.com/zone-eu/haraka-plugin-wildduck/commit/ccda470c347f0462da9c018d47fa4b8aac132961))
+* ZMS-23: add subject to DENY logs ([#110](https://github.com/zone-eu/haraka-plugin-wildduck/issues/110)) ([a6fdd38](https://github.com/zone-eu/haraka-plugin-wildduck/commit/a6fdd38a818f5a6b38d126fb9cc1f3c184e73b78))
+
 ## [5.8.36](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.35...v5.8.36) (2026-01-30)
 
 

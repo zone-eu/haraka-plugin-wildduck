@@ -367,6 +367,13 @@ exports.hook_deny = function (next, connection, params) {
         return;
     }
 
+    let subject = (txn.header.get('Subject') || '').toString();
+    try {
+        subject = libmime.decodeWords(subject).trim();
+    } catch {
+        // failed to parse value
+    }
+
     const [, , , , denyParams, denyHook] = params;
 
     let rcpts;
@@ -402,6 +409,7 @@ exports.hook_deny = function (next, connection, params) {
             short_message: '[DENY:' + txn.notes.sender + '] ' + txn.uuid,
             _mail_action: 'deny',
             _from: txn.notes.sender,
+            _subject: subject,
             _queue_id: txn.uuid,
             _ip: remoteIp,
             _proto: txn.notes.transmissionType,

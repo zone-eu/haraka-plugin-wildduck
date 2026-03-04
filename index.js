@@ -209,8 +209,8 @@ exports.increment_forward_counters = async function (connection) {
 
     for (const [key, { increment, limit }] of forwardCounters.entries()) {
         try {
-            const ttlres = await plugin.ttlcounterAsync('wdf:' + key, increment, limit, false);
-            connection.loginfo(plugin, `Forward counter updated for ${key} (${increment}/${limit}): ${JSON.stringify(ttlres)}`);
+            const ttlres = await plugin.ttlcounterAsync(`wdf:{${key}}`, increment, limit, false);
+            connection.loginfo(plugin, `Forward counter updated for wdf:{${key}} (${increment}/${limit}): ${JSON.stringify(ttlres)}`);
         } catch (err) {
             connection.logerror(plugin, err.message);
         }
@@ -233,7 +233,7 @@ exports.handle_forwarding_address = async function (connection, address, address
     let limitResult;
     try {
         limitResult = await plugin.ttlcounterAsync(
-            'wdf:' + addressData._id.toString(),
+            `wdf:{${addressData._id.toString()}}`,
             0, //addressData.targets.length,
             forwardLimit,
             false
@@ -1743,7 +1743,7 @@ exports.checkRateLimit = function (connection, selector, key, limit, next) {
 
     const windowSize = plugin.cfg.limits[selector + 'WindowSize'] || plugin.cfg.limits.windowSize || 1 * 3600;
 
-    plugin.ttlcounter('rl:' + selector + ':' + key, 0, limit, windowSize, (err, result) => {
+    plugin.ttlcounter(`rl:${selector}:{${key}}`, 0, limit, windowSize, (err, result) => {
         if (err) {
             connection.logerror(plugin, 'RATELIMITERR error=' + err.message);
             return next(err);
@@ -1770,7 +1770,7 @@ exports.updateRateLimit = async (plugin, connection, selector, key, limit) => {
     const windowSize = plugin.cfg.limits[selector + 'WindowSize'] || plugin.cfg.limits.windowSize || 1 * 3600;
 
     return new Promise((resolve, reject) => {
-        plugin.ttlcounter('rl:' + selector + ':' + key, 1, limit, windowSize, (err, result) => {
+        plugin.ttlcounter(`rl:${selector}:{${key}}`, 1, limit, windowSize, (err, result) => {
             if (err) {
                 connection.logerror(plugin, 'RATELIMITERR error=' + err.message);
                 return reject(err);

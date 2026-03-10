@@ -1067,7 +1067,10 @@ exports.hook_queue = function (next, connection) {
     }
 
     if (txn.notes.dmarcResult?.status?.result === 'pass' && txn.notes.dmarcResult?.domain) {
-        verificationResults.dmarc = txn.notes.dmarcResult?.domain;
+        verificationResults.dmarc = {
+            domain: txn.notes.dmarcResult?.domain,
+            policy: txn.notes.dmarcResult?.policy
+        };
     }
 
     // DKIM result

@@ -1043,10 +1043,11 @@ exports.hook_queue = function (next, connection) {
         return next(DENYSOFT, plugin.dsnSpamResponse(txn, softlisted.key).reply);
     }
 
-    // results about verification (TLS, SPF, DKIM)
+    // results about verification (TLS, SPF, DMARC, DKIM)
     const verificationResults = {
         tls: false,
         spf: false,
+        dmarc: false,
         dkim: false,
         arc: false,
         bimi: false
@@ -1063,6 +1064,10 @@ exports.hook_queue = function (next, connection) {
     // SPF result
     if (txn.notes.spfResult?.status?.result === 'pass' && txn.notes.spfResult?.domain) {
         verificationResults.spf = txn.notes.spfResult?.domain;
+    }
+
+    if (txn.notes.dmarcResult?.status?.result === 'pass' && txn.notes.dmarcResult?.domain) {
+        verificationResults.dmarc = txn.notes.dmarcResult?.domain;
     }
 
     // DKIM result

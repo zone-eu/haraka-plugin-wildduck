@@ -241,13 +241,13 @@ exports.handle_forwarding_address = async function (connection, address, address
     } catch (err) {
         // failed checks
         err.resolution = {
-            full_message: err.stack,
+            _stack: err.stack,
             _forward: 'yes',
             _rate_limit: 'yes',
             _selector: 'user',
 
             _failure: 'yes',
-            _error: 'rate limit check failed',
+            _failure_msg: 'rate limit check failed',
             _err_code: err.code
         };
         err.code = err.code || 'RateLimit';
@@ -682,11 +682,11 @@ exports.real_rcpt_handler = function (next, connection, params) {
         } catch (err) {
             connection.logerror(plugin, 'SRS FAILED rcpt=' + address + ' error=' + err.message);
             resolution = {
-                full_message: err.stack,
+                _stack: err.stack,
                 _srs: 'yes',
 
                 _failure: 'yes',
-                _error: 'srs check failed',
+                _failure_msg: 'srs check failed',
                 _err_code: err.code
             };
             txn.notes.rejectCode = 'NO_SUCH_USER';
@@ -700,13 +700,13 @@ exports.real_rcpt_handler = function (next, connection, params) {
             return plugin.checkRateLimit(connection, selector, key, false, (err, success) => {
                 if (err) {
                     resolution = {
-                        full_message: err.stack,
+                        _stack: err.stack,
                         _srs: 'yes',
                         _rate_limit: 'yes',
                         _selector: selector,
 
                         _failure: 'yes',
-                        _error: 'rate limit check failed',
+                        _failure_msg: 'rate limit check failed',
                         _err_code: err.code
                     };
                     err.code = err.code || 'RateLimit';
@@ -753,13 +753,13 @@ exports.real_rcpt_handler = function (next, connection, params) {
         plugin.checkRateLimit(connection, selector, key, false, (err, success) => {
             if (err) {
                 resolution = {
-                    full_message: err.stack,
+                    _stack: err.stack,
                     _rate_limit: 'yes',
                     _selector: selector,
                     _user: userData._id.toString(),
                     _default_address: rcpt.address() !== userData.address ? userData.address : '',
 
-                    _error: 'rate limit check failed',
+                    _failure_msg: 'rate limit check failed',
                     _failure: 'yes',
                     _err_code: err.code
                 };
@@ -808,7 +808,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                         _api: 'resolveAddress',
                         _db_query: 'address:' + address,
 
-                        _error: 'failed to resolve an address',
+                        _failure_msg: 'failed to resolve an address',
                         _failure: 'yes',
                         _err_code: err.code
                     };
@@ -930,13 +930,13 @@ exports.real_rcpt_handler = function (next, connection, params) {
                             plugin.checkRateLimit(connection, selector, key, userData.receivedMax, (err, success) => {
                                 if (err) {
                                     resolution = {
-                                        full_message: err.stack,
+                                        _stack: err.stack,
                                         _rate_limit: 'yes',
                                         _selector: selector,
                                         _user: userData._id.toString(),
                                         _default_address: rcpt.address() !== userData.address ? userData.address : '',
 
-                                        _error: 'rate limit check failed',
+                                        _failure_msg: 'rate limit check failed',
                                         _failure: 'yes',
                                         _err_code: err.code
                                     };
@@ -988,11 +988,11 @@ exports.real_rcpt_handler = function (next, connection, params) {
         plugin.db.users.collection('domaincache').findOne({ domain: addressDomain }, { projection: { _id: 1 } }, (err, data) => {
             if (err) {
                 resolution = {
-                    full_message: err.stack,
+                    _stack: err.stack,
                     _api: 'getDomaincache',
                     _db_query: 'domain:' + addressDomain,
 
-                    _error: 'failed to resolve domain in domain cache',
+                    _failure_msg: 'failed to resolve domain in domain cache',
                     _failure: 'yes',
                     _err_code: err.code
                 };
@@ -1258,9 +1258,9 @@ exports.hook_queue = function (next, connection) {
                         err.code = err.code || 'ERRCOMPOSE';
                         sendLogEntry({
                             short_message: '[Failed forward] ' + queueId,
-                            full_message: err.stack,
+                            _stack: err.stack,
 
-                            _error: 'failed to store message',
+                            _failure_msg: 'failed to store message',
                             _mail_action: 'forward',
                             _failure: 'yes',
                             _err_code: err.code
@@ -1600,7 +1600,7 @@ exports.hook_queue = function (next, connection) {
 
                     if (response.error.code === 'DroppedByPolicy') {
                         sendLogEntry({
-                            full_message: response.error.message,
+                            _stack: response.error.message,
 
                             _user: userData._id.toString(),
                             _to: recipient,
@@ -1609,7 +1609,7 @@ exports.hook_queue = function (next, connection) {
                             _filters_matching: matchingFilters ? matchingFilters.join('\n') : '',
 
                             _no_store: 'yes',
-                            _error: 'message dropped',
+                            _failure_msg: 'message dropped',
                             _dropped: 'yes',
                             _err_code: response.error.code
                         });

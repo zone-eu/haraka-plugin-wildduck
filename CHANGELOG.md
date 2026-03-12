@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.8.38](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.37...v5.8.38) (2026-03-12)
+
+
+### Bug Fixes
+
+* bump deps ([#115](https://github.com/zone-eu/haraka-plugin-wildduck/issues/115)) ([d3bd1bf](https://github.com/zone-eu/haraka-plugin-wildduck/commit/d3bd1bfd5d828327184b6b608c57a96e84d7e98c))
+* ZMS-19: Refactor gelf error logging ([#108](https://github.com/zone-eu/haraka-plugin-wildduck/issues/108)) ([a8b22ba](https://github.com/zone-eu/haraka-plugin-wildduck/commit/a8b22ba20c08d246e0f3ac20eb7d29c02691b8b4))
+* ZMS-30: Add dmarc result to verificationResults ([#113](https://github.com/zone-eu/haraka-plugin-wildduck/issues/113)) ([af58021](https://github.com/zone-eu/haraka-plugin-wildduck/commit/af58021388846d1aef0385e52a46377bea0ec788))
+
 ## [5.8.37](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.36...v5.8.37) (2026-03-03)
 
 

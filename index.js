@@ -1126,7 +1126,7 @@ exports.hook_queue = function (next, connection) {
                 _mail_action: 'process',
                 _queue_id: queueId,
                 _ip: remoteIp,
-                _message_id: messageId,
+                _message_id: messageId.trim(),
                 _spam_score: rspamd ? rspamd.score : '',
                 _spam_action: rspamd ? rspamd.action : '',
                 _from: envelopeFrom,

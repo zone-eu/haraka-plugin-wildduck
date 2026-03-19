@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.39](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.38...v5.8.39) (2026-03-19)
+
+
+### Bug Fixes
+
+* ZMS-39: Do not strip &lt;&gt; off of message_id ([#116](https://github.com/zone-eu/haraka-plugin-wildduck/issues/116)) ([bb2d58e](https://github.com/zone-eu/haraka-plugin-wildduck/commit/bb2d58e893df2756f9109bd162ae5fe205ceec20))
+
 ## [5.8.38](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.37...v5.8.38) (2026-03-12)
 
 

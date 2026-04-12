@@ -39,7 +39,7 @@
         "npm-check-updates": "19.6.3"
     },
     "dependencies": {
-        "@zone-eu/wildduck": "1.46.25",
+        "@zone-eu/wildduck": "1.48.0",
         "gelf": "2.0.1",
         "haraka-dsn": "1.1.0",
         "ioredis": "5.10.0",

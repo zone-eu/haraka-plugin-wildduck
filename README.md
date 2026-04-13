@@ -10,7 +10,7 @@ This plugin:
 
 ```sh
 cd /path/to/local/haraka
-npm install @zone-eu/haraka-plugin-wildduck
+npm install haraka-plugin-wildduck
 echo "wildduck" >> config/plugins
 service haraka restart
 ```
@@ -19,11 +19,11 @@ WildDuck plugin should be placed last in the plugins file.
 
 ### Configuration
 
-This plugin expects MongoDB settings to be set. By default, it uses unauthenticated localhost. If you need to use more specific settings then create your own configuration file:
+This plugin expects both MongoDB and Redis settings to be set. By default, the bundled config uses unauthenticated localhost for both. If you need more specific settings then create your own configuration file:
 
 ```sh
-cp node_modules/@zone-eu/haraka-plugin-wildduck/config/wildduck.ini config/wildduck.ini
-$EDITOR config/wildduck.ini
+cp node_modules/haraka-plugin-wildduck/config/wildduck.yaml config/wildduck.yaml
+$EDITOR config/wildduck.yaml
 ```
 
 ### Notes
@@ -32,10 +32,10 @@ This is the only delivery plugin you need to use Haraka with WildDuck. Make sure
 
 For antispam, WildDuck supports [Haraka's Rspamd plugin](https://www.npmjs.com/package/haraka-plugin-rspamd). WildDuck uses Rspamd output to route messages marked as spam to the Junk mailbox.
 
-This plugin includes SPF and DKIM support. You should not enable Haraka's built-in SPF or dkim_verify plugins.
+This plugin includes SPF, DKIM, ARC, DMARC, and BIMI processing. You should not enable overlapping Haraka auth plugins such as `spf` or `dkim_verify`.
 
 ## License
 
 European Union Public License 1.1 ([details](http://ec.europa.eu/idabc/eupl.html)) or later
 
-> WildDuck plugin for Haraka (`@zone-eu/haraka-plugin-wildduck`) is part of the Zone Mail Suite (ZMS). Suite of programs and modules for an efficient, fast and modern email server.
+> WildDuck plugin for Haraka (`haraka-plugin-wildduck`) is part of the Zone Mail Suite (ZMS). Suite of programs and modules for an efficient, fast and modern email server.

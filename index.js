@@ -209,8 +209,9 @@ exports.increment_forward_counters = async function (connection) {
 
     for (const [key, { increment, limit }] of forwardCounters.entries()) {
         try {
-            const ttlres = await plugin.ttlcounterAsync(`wdf:{${key}}`, increment, limit, false);
-            connection.loginfo(plugin, `Forward counter updated for wdf:{${key}} (${increment}/${limit}): ${JSON.stringify(ttlres)}`);
+            const redisKey = `wdf:${tools.redisHashTag(plugin.db.redis, key)}`;
+            const ttlres = await plugin.ttlcounterAsync(redisKey, increment, limit, false);
+            connection.loginfo(plugin, `Forward counter updated for ${redisKey} (${increment}/${limit}): ${JSON.stringify(ttlres)}`);
         } catch (err) {
             connection.logerror(plugin, err.message);
         }
@@ -229,15 +230,11 @@ exports.handle_forwarding_address = async function (connection, address, address
     const { forwards, autoreplies, /*users,*/ forwardCounters } = txn.notes.targets;
 
     const forwardLimit = addressData.forwards || txn.notes.settings['const:max:forwards'];
+    const redisKey = `wdf:${tools.redisHashTag(plugin.db.redis, addressData._id)}`;
 
     let limitResult;
     try {
-        limitResult = await plugin.ttlcounterAsync(
-            `wdf:{${addressData._id.toString()}}`,
-            0, //addressData.targets.length,
-            forwardLimit,
-            false
-        );
+        limitResult = await plugin.ttlcounterAsync(redisKey, 0, forwardLimit, false);
     } catch (err) {
         // failed checks
         err.resolution = {
@@ -1734,8 +1731,9 @@ exports.checkRateLimit = function (connection, selector, key, limit, next) {
     }
 
     const windowSize = plugin.cfg.limits[selector + 'WindowSize'] || plugin.cfg.limits.windowSize || 1 * 3600;
+    const redisKey = `rl:${selector}:${tools.redisHashTag(plugin.db.redis, key)}`;
 
-    plugin.ttlcounter(`rl:${selector}:{${key}}`, 0, limit, windowSize, (err, result) => {
+    plugin.ttlcounter(redisKey, 0, limit, windowSize, (err, result) => {
         if (err) {
             connection.logerror(plugin, 'RATELIMITERR error=' + err.message);
             return next(err);
@@ -1760,9 +1758,10 @@ exports.updateRateLimit = async (plugin, connection, selector, key, limit) => {
     }
 
     const windowSize = plugin.cfg.limits[selector + 'WindowSize'] || plugin.cfg.limits.windowSize || 1 * 3600;
+    const redisKey = `rl:${selector}:${tools.redisHashTag(plugin.db.redis, key)}`;
 
     return new Promise((resolve, reject) => {
-        plugin.ttlcounter(`rl:${selector}:{${key}}`, 1, limit, windowSize, (err, result) => {
+        plugin.ttlcounter(redisKey, 1, limit, windowSize, (err, result) => {
             if (err) {
                 connection.logerror(plugin, 'RATELIMITERR error=' + err.message);
                 return reject(err);

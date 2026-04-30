@@ -39,6 +39,7 @@ DSN.mbox_full_554 = () => DSN.create(554, 'Mailbox full', 2, 2);
 
 const defaultSpamRejectMessage =
     'Our system has detected that this message is likely unsolicited mail.\nTo reduce the amount of spam this message has been blocked.';
+const maxDataExceededResponse = '550 Message too big!';
 
 exports.register = function () {
     const plugin = this;
@@ -487,6 +488,7 @@ exports.hook_max_data_exceeded = function (next, connection) {
 
         const logdata = {
             short_message: '[DENY:' + txn.notes.sender + '] ' + txn.uuid,
+            _response: maxDataExceededResponse,
             _mail_action: 'deny',
             _from: txn.notes.sender,
             _queue_id: txn.uuid,

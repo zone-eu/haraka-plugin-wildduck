@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.40](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.39...v5.8.40) (2026-04-30)
+
+
+### Bug Fixes
+
+* ZMS-57: Add _response to hook_max_data_exceeded log ([#122](https://github.com/zone-eu/haraka-plugin-wildduck/issues/122)) ([64605d2](https://github.com/zone-eu/haraka-plugin-wildduck/commit/64605d27beda5d4dd2a6b62fa8f0548d55593439))
+
 ## [5.8.39](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.38...v5.8.39) (2026-04-13)
 
 

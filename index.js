@@ -1426,11 +1426,13 @@ exports.hook_queue = function (next, connection) {
     const storeMessages = async () => {
         let prepared = false;
         const userList = Array.from(users).map(e => e[1]);
+        const zilter = txn.results.get('zilter');
 
         for (const rcptData of userList) {
             const rspamd = txn.results.get('rspamd');
             const recipient = rcptData.recipient;
             const userData = rcptData.userData;
+            const zilterOverrides = zilter?.['rcpt-overrides']?.[userData.address];
 
             connection.logdebug(plugin, 'Filtering message for ' + recipient);
 
@@ -1463,6 +1465,7 @@ exports.hook_queue = function (next, connection) {
                         transtype: txn.notes.transmissionType,
                         spamScore: rspamd ? rspamd.score : false,
                         spamAction: rspamd ? rspamd.action : false,
+                        overrides: zilterOverrides || false,
                         time: new Date()
                     }
                 });
@@ -1887,11 +1890,14 @@ exports.rspamdSymbols = function (txn) {
 exports.checkRspamdBlacklist = function (txn) {
     const plugin = this;
     const rspamd = txn.results.get('rspamd');
+    const zilter = txn.results.get('zilter');
     const symbols = (rspamd && rspamd.symbols) || rspamd;
 
     if (!symbols) {
         return false;
     }
+
+    const ignoreSymbols = zilter?.['ignore-symbols'];
 
     for (const key of plugin.rspamd.blacklist) {
         if (!(key in symbols)) {
@@ -1906,6 +1912,11 @@ exports.checkRspamdBlacklist = function (txn) {
         }
 
         if (score && score > 0) {
+            if (Array.isArray(ignoreSymbols) && ignoreSymbols.includes(key)) {
+                plugin.loginfo(`Ignoring blacklisted Rspamd symbol ${key} due to zilter override`);
+                continue;
+            }
+
             return { key, value: symbols[key] };
         }
     }
@@ -1915,11 +1926,14 @@ exports.checkRspamdBlacklist = function (txn) {
 exports.checkRspamdSoftlist = function (txn) {
     const plugin = this;
     const rspamd = txn.results.get('rspamd');
+    const zilter = txn.results.get('zilter');
     const symbols = (rspamd && rspamd.symbols) || rspamd;
 
     if (!symbols) {
         return false;
     }
+
+    const ignoreSymbols = zilter?.['ignore-symbols'];
 
     for (const key of plugin.rspamd.softlist) {
         if (!(key in symbols)) {
@@ -1934,6 +1948,11 @@ exports.checkRspamdSoftlist = function (txn) {
         }
 
         if (score && score > 0) {
+            if (Array.isArray(ignoreSymbols) && ignoreSymbols.includes(key)) {
+                plugin.loginfo(`Ignoring softlisted Rspamd symbol ${key} due to zilter override`);
+                continue;
+            }
+
             return { key, value: symbols[key] };
         }
     }

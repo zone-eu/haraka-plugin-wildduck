@@ -1151,6 +1151,12 @@ exports.hook_queue = function (next, connection) {
                 .map(symbol => `${symbol.key}=${symbol.score}`)
                 .join(', ');
 
+            Object.keys(message).forEach(key => {
+                if (typeof message[key] === 'undefined') {
+                    delete message[key];
+                }
+            });
+
             plugin.loggelf(message);
         }
     };
@@ -1489,6 +1495,8 @@ exports.hook_queue = function (next, connection) {
                 let targetMailbox;
                 let targetId;
                 let isSpam = false;
+                const overrideFlags = Array.isArray(zilterOverrides?.flags) ? zilterOverrides.flags : [];
+                const overrideIsSpam = overrideFlags.length ? overrideFlags.some(flag => (flag || '').toString().toLowerCase() !== 'ham') : undefined;
                 const filterMessages = [];
                 let matchingFilters;
 
@@ -1566,9 +1574,11 @@ exports.hook_queue = function (next, connection) {
                             return;
                         }
 
-                        if (entry.spam) {
-                            isSpam = true;
-                            filterMessages.push('Spam');
+                        if ('spam' in entry || 'originalSpam' in entry) {
+                            isSpam = 'originalSpam' in entry ? !!entry.originalSpam : !!entry.spam;
+                            if (entry.spam) {
+                                filterMessages.push('Spam');
+                            }
                             return;
                         }
 
@@ -1612,6 +1622,7 @@ exports.hook_queue = function (next, connection) {
                             _filter: filterMessages.length ? filterMessages.join('\n') : '',
                             _filter_is_spam: isSpam ? 'yes' : 'no',
                             _filters_matching: matchingFilters ? matchingFilters.join('\n') : '',
+                            _override_is_spam: overrideIsSpam === undefined ? undefined : overrideIsSpam ? 'yes' : 'no',
 
                             _no_store: 'yes',
                             _failure_msg: 'message dropped',
@@ -1634,6 +1645,7 @@ exports.hook_queue = function (next, connection) {
                             _filter: filterMessages.length ? filterMessages.join('\n') : '',
                             _filter_is_spam: isSpam ? 'yes' : 'no',
                             _filters_matching: matchingFilters ? matchingFilters.join('\n') : '',
+                            _override_is_spam: overrideIsSpam === undefined ? undefined : overrideIsSpam ? 'yes' : 'no',
 
                             _no_store: 'yes',
                             _error: 'failed to store message',
@@ -1658,6 +1670,7 @@ exports.hook_queue = function (next, connection) {
                         _filter: filterMessages.length ? filterMessages.join('\n') : '',
                         _filter_is_spam: isSpam ? 'yes' : 'no',
                         _filters_matching: matchingFilters ? matchingFilters.join('\n') : '',
+                        _override_is_spam: overrideIsSpam === undefined ? undefined : overrideIsSpam ? 'yes' : 'no',
 
                         _stored_mailbox: targetMailbox && targetMailbox.mailbox,
                         _stored_path: targetMailbox && targetMailbox.path,

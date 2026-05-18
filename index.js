@@ -1926,7 +1926,7 @@ exports.checkRspamdBlacklist = function (txn) {
 
         if (score && score > 0) {
             if (Array.isArray(ignoreSymbols) && ignoreSymbols.includes(key)) {
-                plugin.loginfo(`Ignoring blacklisted Rspamd symbol ${key} due to zilter override`);
+                plugin.loginfo(plugin, `Ignoring blacklisted Rspamd symbol ${key} due to zilter override`);
                 continue;
             }
 
@@ -1962,7 +1962,7 @@ exports.checkRspamdSoftlist = function (txn) {
 
         if (score && score > 0) {
             if (Array.isArray(ignoreSymbols) && ignoreSymbols.includes(key)) {
-                plugin.loginfo(`Ignoring softlisted Rspamd symbol ${key} due to zilter override`);
+                plugin.loginfo(plugin, `Ignoring softlisted Rspamd symbol ${key} due to zilter override`);
                 continue;
             }
 

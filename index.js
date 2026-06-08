@@ -1384,7 +1384,8 @@ exports.hook_queue = function (next, connection) {
                     short_message: '[Queued autoreply] ' + queueId,
                     _mail_action: 'autoreply',
                     _target_queue_id: result.id,
-                    _target_address: addressData.address
+                    _target_address: addressData.address,
+                    _subject: subject
                 });
 
                 plugin.loggelf({
@@ -1394,6 +1395,7 @@ exports.hook_queue = function (next, connection) {
 
                     _parent_queue_id: queueId,
                     _from: addressData.address,
+                    _subject: subject,
                     _to: addressData.address,
 
                     _queued: 'yes',
@@ -1411,6 +1413,7 @@ exports.hook_queue = function (next, connection) {
                     _target_address: addressData.address,
                     _parent_queue_id: queueId,
                     _from: addressData.address,
+                    _subject: subject,
                     _to: addressData.address,
                     _failure: 'yes',
                     _error: err.message,
@@ -1557,7 +1560,8 @@ exports.hook_queue = function (next, connection) {
                                 _user: userData._id.toString(),
                                 _to: recipient,
                                 _target_queue_id: entry['autoreply-queue-id'],
-                                _target_address: entry.autoreply
+                                _target_address: entry.autoreply,
+                                _subject: subject
                             });
 
                             plugin.loggelf({
@@ -1566,6 +1570,7 @@ exports.hook_queue = function (next, connection) {
 
                                 _parent_queue_id: queueId,
                                 _from: recipient,
+                                _subject: subject,
                                 _to: entry.autoreply,
 
                                 _queued: 'yes',

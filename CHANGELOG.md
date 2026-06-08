@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.8.42](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.41...v5.8.42) (2026-06-08)
+
+
+### Bug Fixes
+
+* ZMS-74: Add subject to forward_to, autoreply and other logs ([#131](https://github.com/zone-eu/haraka-plugin-wildduck/issues/131)) ([ed3b407](https://github.com/zone-eu/haraka-plugin-wildduck/commit/ed3b407636ce9c54bf8a345feb1329dc0194fd36))
+
 ## [5.8.41](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.40...v5.8.41) (2026-05-25)
 
 

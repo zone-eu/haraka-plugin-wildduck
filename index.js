@@ -471,6 +471,8 @@ exports.hook_max_data_exceeded = function (next, connection) {
         return;
     }
 
+    const subject = getMessageSubject(txn);
+
     let rcpts = txn.rcpt_to || [];
     if (!rcpts.length) {
         rcpts = [false];
@@ -496,6 +498,7 @@ exports.hook_max_data_exceeded = function (next, connection) {
             _response: maxDataExceededResponse,
             _mail_action: 'deny',
             _from: txn.notes.sender,
+            _subject: subject,
             _queue_id: txn.uuid,
             _ip: remoteIp,
             _proto: txn.notes.transmissionType,

@@ -36,17 +36,17 @@
         "grunt": "1.6.2",
         "grunt-cli": "1.5.0",
         "grunt-eslint": "24.3.0",
-        "npm-check-updates": "22.2.1"
+        "npm-check-updates": "22.2.3"
     },
     "dependencies": {
-        "@zone-eu/wildduck": "1.48.2",
+        "@zone-eu/wildduck": "1.49.3",
         "gelf": "2.0.1",
         "haraka-dsn": "1.2.0",
-        "ioredis": "5.10.1",
+        "ioredis": "5.11.1",
         "libmime": "5.3.8",
         "mailauth": "4.13.3",
         "mongodb": "4.17.0",
-        "nodemailer": "8.0.8",
+        "nodemailer": "8.0.11",
         "punycode.js": "2.3.1",
         "srs.js": "0.1.0"
     }

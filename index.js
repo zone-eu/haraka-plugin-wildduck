@@ -205,7 +205,7 @@ exports.normalize_address = function (address) {
         return localAddress + '@' + punycode.toUnicode(address.host.toLowerCase().trim());
     }
 
-    return tools.normalizeAddress(address.address());
+    return tools.normalizeAddress(address.address);
 };
 
 exports.increment_forward_counters = async function (connection) {
@@ -398,7 +398,7 @@ exports.hook_deny = function (next, connection, params) {
 
     for (const rcpt of rcpts) {
         let user;
-        const address = (rcpt && rcpt.address()) || false;
+        const address = (rcpt && rcpt.address) || false;
 
         if (txn.notes.targets && txn.notes.targets.users) {
             // try to resolve user id for the recipient address
@@ -480,7 +480,7 @@ exports.hook_max_data_exceeded = function (next, connection) {
 
     for (const rcpt of rcpts) {
         let user;
-        const address = (rcpt && rcpt.address()) || false;
+        const address = (rcpt && rcpt.address) || false;
 
         if (txn.notes.targets && txn.notes.targets.users) {
             // try to resolve user id for the recipient address
@@ -650,10 +650,10 @@ exports.real_rcpt_handler = function (next, connection, params) {
     const hookDone = (...args) => {
         if (resolution) {
             const message = {
-                short_message: '[RCPT TO:' + rcpt.address() + '] ' + txn.uuid,
+                short_message: '[RCPT TO:' + rcpt.address + '] ' + txn.uuid,
                 _mail_action: 'rcpt_to',
                 _from: txn.notes.sender,
-                _to: rcpt.address(),
+                _to: rcpt.address,
                 _subject: getMessageSubject(txn),
                 _queue_id: txn.uuid,
                 _ip: remoteIp,
@@ -740,7 +740,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
 
                 connection.loginfo(plugin, `SRS USING rcpt=${address} target=${reversed}`);
 
-                forwards.set(reversed, { type: 'mail', value: reversed, recipient: rcpt.address() });
+                forwards.set(reversed, { type: 'mail', value: reversed, recipient: rcpt.address });
 
                 resolution = {
                     _srs: 'yes',
@@ -768,7 +768,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                     _rate_limit: 'yes',
                     _selector: selector,
                     _user: userData._id.toString(),
-                    _default_address: rcpt.address() !== userData.address ? userData.address : '',
+                    _default_address: rcpt.address !== userData.address ? userData.address : '',
 
                     _failure_msg: 'rate limit check failed',
                     _failure: 'yes',
@@ -784,7 +784,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                     _selector: selector,
                     _error: 'too many attempts',
                     _user: userData._id.toString(),
-                    _default_address: rcpt.address() !== userData.address ? userData.address : ''
+                    _default_address: rcpt.address !== userData.address ? userData.address : ''
                 };
                 txn.notes.rejectCode = 'RATE_LIMIT';
                 return hookDone(DENYSOFT, DSN.rcpt_too_fast());
@@ -929,7 +929,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                                 _max_quota: quota,
                                 _quota_source: userData.quota ? 'user' : 'config',
                                 _storage_used: userData.storageUsed,
-                                _default_address: rcpt.address() !== userData.address ? userData.address : ''
+                                _default_address: rcpt.address !== userData.address ? userData.address : ''
                             };
                             txn.notes.rejectCode = 'MBOX_FULL';
                             return hookDone(DENY, DSN.mbox_full_554());
@@ -945,7 +945,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                                         _rate_limit: 'yes',
                                         _selector: selector,
                                         _user: userData._id.toString(),
-                                        _default_address: rcpt.address() !== userData.address ? userData.address : '',
+                                        _default_address: rcpt.address !== userData.address ? userData.address : '',
 
                                         _failure_msg: 'rate limit check failed',
                                         _failure: 'yes',
@@ -961,26 +961,26 @@ exports.real_rcpt_handler = function (next, connection, params) {
                                         _selector: selector,
                                         _error: 'too many attempts',
                                         _user: userData._id.toString(),
-                                        _default_address: rcpt.address() !== userData.address ? userData.address : ''
+                                        _default_address: rcpt.address !== userData.address ? userData.address : ''
                                     };
                                     txn.notes.rejectCode = 'RATE_LIMIT';
                                     return hookDone(DENYSOFT, DSN.rcpt_too_fast());
                                 }
 
-                                connection.loginfo(plugin, 'RESOLVED rcpt=' + rcpt.address() + ' user=' + userData.address + '[' + userData._id + ']');
+                                connection.loginfo(plugin, 'RESOLVED rcpt=' + rcpt.address + ' user=' + userData.address + '[' + userData._id + ']');
 
                                 // update rate limit for this address after delivery
                                 txn.notes.rateKeys.push({ selector, key, limit: userData.receivedMax });
 
                                 users.set(userData._id.toString(), {
                                     userData,
-                                    recipient: rcpt.address()
+                                    recipient: rcpt.address
                                 });
 
                                 resolution = {
                                     _user: userData._id.toString(),
                                     _rcpt_accepted: 'yes',
-                                    _default_address: rcpt.address() !== userData.address ? userData.address : ''
+                                    _default_address: rcpt.address !== userData.address ? userData.address : ''
                                 };
                                 txn.notes.rejectCode = false;
                                 hookDone(OK);

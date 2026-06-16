@@ -1,5 +1,21 @@
 # Changelog
 
+## [6.0.0](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.43...v6.0.0) (2026-06-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* bump deps ([#137](https://github.com/zone-eu/haraka-plugin-wildduck/issues/137))
+
+### Features
+
+* bump deps ([#137](https://github.com/zone-eu/haraka-plugin-wildduck/issues/137)) ([00ceeab](https://github.com/zone-eu/haraka-plugin-wildduck/commit/00ceeab18998bdeb657029ad7b4f0fc2fe656841))
+
+
+### Bug Fixes
+
+* update Address formats to @haraka/email-address ([#135](https://github.com/zone-eu/haraka-plugin-wildduck/issues/135)) ([9147586](https://github.com/zone-eu/haraka-plugin-wildduck/commit/91475860459521d400bdc63a44812bd0553e8a9f))
+
 ## [5.8.43](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.42...v5.8.43) (2026-06-10)
 
 

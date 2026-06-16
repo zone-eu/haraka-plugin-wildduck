@@ -1,6 +1,6 @@
 {
     "name": "haraka-plugin-wildduck",
-    "version": "5.8.40",
+    "version": "5.8.43",
     "description": "Haraka plugin for processing incoming messages for the WildDuck IMAP server",
     "main": "index.js",
     "scripts": {
@@ -33,20 +33,20 @@
         "eslint": "9.25.1",
         "eslint-config-nodemailer": "1.2.0",
         "eslint-config-prettier": "10.1.8",
-        "grunt": "1.6.1",
+        "grunt": "1.6.2",
         "grunt-cli": "1.5.0",
         "grunt-eslint": "24.3.0",
-        "npm-check-updates": "20.0.1"
+        "npm-check-updates": "22.2.3"
     },
     "dependencies": {
-        "@zone-eu/wildduck": "1.48.0",
+        "@zone-eu/wildduck": "1.49.3",
         "gelf": "2.0.1",
-        "haraka-dsn": "1.1.0",
-        "ioredis": "5.10.1",
+        "haraka-dsn": "1.2.0",
+        "ioredis": "5.11.1",
         "libmime": "5.3.8",
-        "mailauth": "4.13.2",
+        "mailauth": "4.13.3",
         "mongodb": "4.17.0",
-        "nodemailer": "8.0.5",
+        "nodemailer": "8.0.11",
         "punycode.js": "2.3.1",
         "srs.js": "0.1.0"
     }

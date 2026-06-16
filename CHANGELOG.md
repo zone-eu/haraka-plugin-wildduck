@@ -1,5 +1,27 @@
 # Changelog
 
+## [5.8.43](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.42...v5.8.43) (2026-06-10)
+
+
+### Bug Fixes
+
+* bump deps ([#133](https://github.com/zone-eu/haraka-plugin-wildduck/issues/133)) ([f8771ae](https://github.com/zone-eu/haraka-plugin-wildduck/commit/f8771aeee0ce970b9b3708d7f2625aeebe07d99d))
+
+## [5.8.42](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.41...v5.8.42) (2026-06-08)
+
+
+### Bug Fixes
+
+* ZMS-74: Add subject to forward_to, autoreply and other logs ([#131](https://github.com/zone-eu/haraka-plugin-wildduck/issues/131)) ([ed3b407](https://github.com/zone-eu/haraka-plugin-wildduck/commit/ed3b407636ce9c54bf8a345feb1329dc0194fd36))
+
+## [5.8.41](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.40...v5.8.41) (2026-05-25)
+
+
+### Bug Fixes
+
+* bump deps ([#130](https://github.com/zone-eu/haraka-plugin-wildduck/issues/130)) ([4eae2a2](https://github.com/zone-eu/haraka-plugin-wildduck/commit/4eae2a292d97805e10297c3831efbbd4fadae335))
+* ZMS-62: Add support for zilter overrides ([#127](https://github.com/zone-eu/haraka-plugin-wildduck/issues/127)) ([64d074d](https://github.com/zone-eu/haraka-plugin-wildduck/commit/64d074d7abf3613e49f83a1e78891bf0c2513588))
+
 ## [5.8.40](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.39...v5.8.40) (2026-04-30)
 
 

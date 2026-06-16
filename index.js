@@ -41,6 +41,16 @@ const defaultSpamRejectMessage =
     'Our system has detected that this message is likely unsolicited mail.\nTo reduce the amount of spam this message has been blocked.';
 const maxDataExceededResponse = '550 Message too big!';
 
+const getMessageSubject = txn => {
+    let subject = (txn?.header?.get('Subject') || '').toString();
+    try {
+        subject = libmime.decodeWords(subject).trim();
+    } catch {
+        // failed to parse value
+    }
+    return subject;
+};
+
 exports.register = function () {
     const plugin = this;
     plugin.logdebug('Initializing WildDuck plugin.');
@@ -368,12 +378,7 @@ exports.hook_deny = function (next, connection, params) {
         return;
     }
 
-    let subject = (txn.header.get('Subject') || '').toString();
-    try {
-        subject = libmime.decodeWords(subject).trim();
-    } catch {
-        // failed to parse value
-    }
+    const subject = getMessageSubject(txn);
 
     const [, , , , denyParams, denyHook] = params;
 
@@ -466,6 +471,8 @@ exports.hook_max_data_exceeded = function (next, connection) {
         return;
     }
 
+    const subject = getMessageSubject(txn);
+
     let rcpts = txn.rcpt_to || [];
     if (!rcpts.length) {
         rcpts = [false];
@@ -491,6 +498,7 @@ exports.hook_max_data_exceeded = function (next, connection) {
             _response: maxDataExceededResponse,
             _mail_action: 'deny',
             _from: txn.notes.sender,
+            _subject: subject,
             _queue_id: txn.uuid,
             _ip: remoteIp,
             _proto: txn.notes.transmissionType,
@@ -646,6 +654,7 @@ exports.real_rcpt_handler = function (next, connection, params) {
                 _mail_action: 'rcpt_to',
                 _from: txn.notes.sender,
                 _to: rcpt.address,
+                _subject: getMessageSubject(txn),
                 _queue_id: txn.uuid,
                 _ip: remoteIp,
                 _proto: txn.notes.transmissionType
@@ -1111,17 +1120,11 @@ exports.hook_queue = function (next, connection) {
     }
 
     const messageId = (txn.header.get('Message-Id') || '').toString();
-    let subject = (txn.header.get('Subject') || '').toString();
+    const subject = getMessageSubject(txn);
 
     const sendLogEntry = resolution => {
         if (resolution) {
             const rspamd = txn.results.get('rspamd');
-
-            try {
-                subject = libmime.decodeWords(subject).trim();
-            } catch {
-                // failed to parse value
-            }
 
             const message = {
                 short_message: '[PROCESS] ' + queueId,
@@ -1292,6 +1295,7 @@ exports.hook_queue = function (next, connection) {
 
                     _parent_queue_id: queueId,
                     _from: txn.notes.sender,
+                    _subject: subject,
                     _to: targets.map(target => ((target && target.value) || target).toString().replace(/\?.*$/, '')).join('\n'),
 
                     _queued: 'yes',
@@ -1383,7 +1387,8 @@ exports.hook_queue = function (next, connection) {
                     short_message: '[Queued autoreply] ' + queueId,
                     _mail_action: 'autoreply',
                     _target_queue_id: result.id,
-                    _target_address: addressData.address
+                    _target_address: addressData.address,
+                    _subject: subject
                 });
 
                 plugin.loggelf({
@@ -1393,6 +1398,7 @@ exports.hook_queue = function (next, connection) {
 
                     _parent_queue_id: queueId,
                     _from: addressData.address,
+                    _subject: subject,
                     _to: addressData.address,
 
                     _queued: 'yes',
@@ -1410,6 +1416,7 @@ exports.hook_queue = function (next, connection) {
                     _target_address: addressData.address,
                     _parent_queue_id: queueId,
                     _from: addressData.address,
+                    _subject: subject,
                     _to: addressData.address,
                     _failure: 'yes',
                     _error: err.message,
@@ -1538,6 +1545,7 @@ exports.hook_queue = function (next, connection) {
 
                                 _parent_queue_id: queueId,
                                 _from: recipient,
+                                _subject: subject,
                                 _to: entry.forward,
 
                                 _queued: 'yes',
@@ -1555,7 +1563,8 @@ exports.hook_queue = function (next, connection) {
                                 _user: userData._id.toString(),
                                 _to: recipient,
                                 _target_queue_id: entry['autoreply-queue-id'],
-                                _target_address: entry.autoreply
+                                _target_address: entry.autoreply,
+                                _subject: subject
                             });
 
                             plugin.loggelf({
@@ -1564,6 +1573,7 @@ exports.hook_queue = function (next, connection) {
 
                                 _parent_queue_id: queueId,
                                 _from: recipient,
+                                _subject: subject,
                                 _to: entry.autoreply,
 
                                 _queued: 'yes',

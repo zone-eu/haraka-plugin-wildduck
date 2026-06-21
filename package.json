@@ -46,7 +46,7 @@
         "libmime": "5.3.8",
         "mailauth": "4.13.3",
         "mongodb": "4.17.0",
-        "nodemailer": "8.0.11",
+        "nodemailer": "9.0.1",
         "punycode.js": "2.3.1",
         "srs.js": "0.1.0"
     }

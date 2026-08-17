@@ -1445,7 +1445,7 @@ exports.hook_queue = function (next, connection) {
             const rspamd = txn.results.get('rspamd');
             const recipient = rcptData.recipient;
             const userData = rcptData.userData;
-            const zilterOverrides = zilter?.['rcpt-overrides']?.[userData.address];
+            const zilterOverrides = zilter?.['rcpt-overrides']?.[recipient];
 
             connection.logdebug(plugin, 'Filtering message for ' + recipient);
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.1](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.0...v6.0.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* zilter recipient overrides are keyed by recipient address ([#141](https://github.com/zone-eu/haraka-plugin-wildduck/issues/141)) ([0e75a22](https://github.com/zone-eu/haraka-plugin-wildduck/commit/0e75a22dc6653d7f34c735f17453aae9a7b59058))
+
 ## [6.0.0](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v5.8.43...v6.0.0) (2026-06-16)
 
 

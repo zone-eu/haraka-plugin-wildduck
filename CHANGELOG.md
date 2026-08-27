@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.2](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.1...v6.0.2) (2026-08-27)
+
+
+### Bug Fixes
+
+* update dockerfile ([#144](https://github.com/zone-eu/haraka-plugin-wildduck/issues/144)) ([2074140](https://github.com/zone-eu/haraka-plugin-wildduck/commit/2074140006ad2bdeaf2b365bb77306afb07325de))
+
 ## [6.0.1](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.0...v6.0.1) (2026-08-18)
 
 

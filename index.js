@@ -1134,6 +1134,7 @@ exports.hook_queue = function (next, connection) {
                 _message_id: messageId.trim(),
                 _spam_score: rspamd ? rspamd.score : '',
                 _spam_action: rspamd ? rspamd.action : '',
+                _rspamd_is_spam: plugin.rspamdIsSpam(rspamd && rspamd.action) ? 'yes' : 'no',
                 _from: envelopeFrom,
                 _subject: subject
             };
@@ -1908,6 +1909,33 @@ exports.rspamdSymbols = function (txn) {
     });
 
     return result;
+};
+
+exports.rspamdIsSpam = function (action) {
+    let spamScore;
+
+    switch (action) {
+        case 'reject':
+            spamScore = 75;
+            break;
+
+        case 'rewrite subject':
+        case 'soft reject':
+        case 'greylist':
+            spamScore = 50;
+            break;
+
+        case 'add header':
+            spamScore = 25;
+            break;
+
+        case 'no action':
+        default:
+            spamScore = 0;
+            break;
+    }
+
+    return spamScore >= 50;
 };
 
 exports.checkRspamdBlacklist = function (txn) {

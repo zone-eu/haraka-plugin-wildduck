@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.3](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.2...v6.0.3) (2026-08-28)
+
+
+### Bug Fixes
+
+* ZMS-98: Add rspamd_is_spam logs for original rspamd results ([#146](https://github.com/zone-eu/haraka-plugin-wildduck/issues/146)) ([90f0206](https://github.com/zone-eu/haraka-plugin-wildduck/commit/90f02065b7e98978be92de53fcd1d4733ca6a452))
+
 ## [6.0.2](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.1...v6.0.2) (2026-08-27)
 
 

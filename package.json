@@ -33,20 +33,20 @@
         "eslint": "9.25.1",
         "eslint-config-nodemailer": "1.2.0",
         "eslint-config-prettier": "10.1.8",
-        "grunt": "1.6.2",
+        "grunt": "1.6.3",
         "grunt-cli": "1.5.0",
         "grunt-eslint": "24.3.0",
         "npm-check-updates": "22.2.3"
     },
     "dependencies": {
-        "@zone-eu/wildduck": "1.49.4",
+        "@zone-eu/wildduck": "1.50.2",
         "gelf": "2.0.1",
-        "haraka-dsn": "1.2.0",
+        "haraka-dsn": "1.2.1",
         "ioredis": "5.11.1",
-        "libmime": "5.3.8",
-        "mailauth": "4.13.3",
+        "libmime": "5.4.3",
+        "mailauth": "5.0.2",
         "mongodb": "4.17.0",
-        "nodemailer": "9.0.1",
+        "nodemailer": "9.1.1",
         "punycode.js": "2.3.1",
         "srs.js": "0.1.0"
     }

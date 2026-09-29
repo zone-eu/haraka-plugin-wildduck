@@ -39,7 +39,7 @@
         "npm-check-updates": "22.2.3"
     },
     "dependencies": {
-        "@zone-eu/wildduck": "1.50.2",
+        "@zone-eu/wildduck": "1.51.4",
         "gelf": "2.0.1",
         "haraka-dsn": "1.2.1",
         "ioredis": "5.11.1",

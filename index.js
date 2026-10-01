@@ -1115,7 +1115,11 @@ exports.hook_queue = function (next, connection) {
     }
 
     // BIMI
-    if (txn.notes.bimiResult?.status?.result === 'pass' && txn.notes?.bimi) {
+    if (
+        txn.notes.bimiResult?.status?.result === 'pass' &&
+        txn.notes?.bimi &&
+        txn.notes.dmarcResult?.status?.result === 'pass'
+    ) {
         verificationResults.bimi = txn.notes.bimi;
     }
 

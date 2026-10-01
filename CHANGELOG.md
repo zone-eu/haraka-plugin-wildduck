@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.5](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.4...v6.0.5) (2026-10-01)
+
+
+### Bug Fixes
+
+* bump deps ([#155](https://github.com/zone-eu/haraka-plugin-wildduck/issues/155)) ([88511d0](https://github.com/zone-eu/haraka-plugin-wildduck/commit/88511d02a0f02e97ad80ea0d073c1c48ac767467))
+
 ## [6.0.4](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.3...v6.0.4) (2026-09-01)
 
 

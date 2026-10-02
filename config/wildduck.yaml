@@ -61,6 +61,17 @@ attachments:
     bucket: 'attachments'
     decodeBase64: true
 
+imap:
+    # Match the [aps] settings in WildDuck's imap.toml for incoming mail push notifications.
+    aps:
+        enabled: false
+        # APNs topic (UID from the push certificate)
+        #topic: 'com.apple.mobilemail.push.example.com'
+        # Certificate and private key paths, relative to Haraka's config directory or absolute
+        #certPath: 'apns.pem'
+        #keyPath: 'apns.key'
+        sandbox: false
+
 limits:
     windowSize: 3600 # 1 hour
     rcptIp: 100 # allowed messages for the same recipient from same IP during window size

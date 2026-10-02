@@ -26,6 +26,8 @@ cp node_modules/haraka-plugin-wildduck/config/wildduck.yaml config/wildduck.yaml
 $EDITOR config/wildduck.yaml
 ```
 
+For Apple Mail push notifications on incoming messages, use a WildDuck build with XAPPLEPUSHSERVICE and APNs support. Enable `imap.aps.enabled` in `wildduck.yaml` and set `topic`, `certPath`, `keyPath`, and `sandbox` to match WildDuck's `[aps]` settings in `imap.toml`. Certificate and key paths may be absolute or relative to Haraka's configuration directory. Restart Haraka after changing these settings.
+
 ### Notes
 
 This is the only delivery plugin you need to use Haraka with WildDuck. Make sure Haraka has no other delivery plugin(s) enabled.

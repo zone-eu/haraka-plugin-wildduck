@@ -26,6 +26,31 @@ cp node_modules/haraka-plugin-wildduck/config/wildduck.yaml config/wildduck.yaml
 $EDITOR config/wildduck.yaml
 ```
 
+### S3 attachment storage
+
+WildDuck 1.52.0 adds S3 storage for deduplicated message attachment payloads. This plugin passes its `attachments` configuration directly to WildDuck. To store new attachment hashes in S3, configure Haraka's `config/wildduck.yaml` with the same S3 settings as WildDuck:
+
+```yaml
+attachments:
+    type: 's3'
+    bucket: 'attachments' # MongoDB catalog / GridFS bucket, not the S3 bucket
+    decodeBase64: true
+    s3:
+        bucket: 'wildduck-attachments'
+        prefix: 'production'
+        region: 'us-east-1'
+        # endpoint: 'https://s3.example.com'
+        # forcePathStyle: true
+        # accessKeyId: '...'
+        # secretAccessKey: '...'
+```
+
+The S3 bucket and a nonempty prefix are required. Use a stable prefix unique to the installation within the bucket. Credentials use the AWS SDK default provider chain unless `accessKeyId` and `secretAccessKey` are supplied; `sessionToken` is also supported. The bundled configuration lists timeout and connection options.
+
+MongoDB and Redis are still required. Keep `mongo.gridfs` and `attachments.bucket` aligned with WildDuck because attachment metadata and reference counts remain in MongoDB. Existing GridFS attachments remain readable and are reused; changing `type` affects only new attachment hashes. S3 upload failures defer SMTP delivery for retry.
+
+Upgrade every process that reads or writes message attachments to WildDuck 1.52.0 or later before enabling S3, including Haraka and `zonemta-wildduck`. Haraka also reads stored attachments when forwarding messages, so configure `attachments.s3` whenever S3-backed attachments exist, even if `attachments.type` remains `gridstore`. Restart Haraka after changing storage settings so its message handler is recreated.
+
 ### Notes
 
 This is the only delivery plugin you need to use Haraka with WildDuck. Make sure Haraka has no other delivery plugin(s) enabled.

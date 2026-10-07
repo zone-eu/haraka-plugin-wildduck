@@ -1,5 +1,14 @@
 # Changelog
 
+## [6.0.6](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.5...v6.0.6) (2026-10-07)
+
+
+### Bug Fixes
+
+* **deps:** update libmime to 5.4.7, mailauth to 7.1.1 and nodemailer to 10.0.14 ([41cba5f](https://github.com/zone-eu/haraka-plugin-wildduck/commit/41cba5f95d8eef07ea78e0f1ae4cf1da5ec897cf))
+* ZMS-05: Add XAPPLEPUSHSERVICE support ([#158](https://github.com/zone-eu/haraka-plugin-wildduck/issues/158)) ([70bf527](https://github.com/zone-eu/haraka-plugin-wildduck/commit/70bf527db1aba7dd32f737109811ce685e243f76))
+* ZMS-112: Bump deps, add wildduck s3 config support ([#160](https://github.com/zone-eu/haraka-plugin-wildduck/issues/160)) ([8629f53](https://github.com/zone-eu/haraka-plugin-wildduck/commit/8629f53aa4e7bf424dab6b0510279fa1c7fe1047))
+
 ## [6.0.5](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.4...v6.0.5) (2026-10-01)
 
 

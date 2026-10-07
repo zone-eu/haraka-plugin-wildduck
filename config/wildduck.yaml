@@ -57,9 +57,30 @@ srs:
     secret: 'secret value'
 
 attachments:
+    # Preferred backend for new attachment hashes: 'gridstore' or 's3'.
+    # Existing attachments keep their recorded backend.
     type: 'gridstore'
+    # MongoDB attachment catalog / GridFS bucket, also required with S3.
     bucket: 'attachments'
     decodeBase64: true
+    # Match WildDuck's S3 settings, even with type: 'gridstore' if S3 attachments exist.
+    # bucket and a stable, nonempty prefix are required when enabling S3.
+    # Without explicit credentials, the AWS SDK default credential chain is used.
+    #s3:
+    #    bucket: 'wildduck-attachments'
+    #    prefix: 'production'
+    #    region: 'us-east-1'
+    #    endpoint: 'https://s3.example.com' # optional for S3-compatible storage
+    #    forcePathStyle: false
+    #    accessKeyId: ''
+    #    secretAccessKey: ''
+    #    sessionToken: ''
+    #    maxAttempts: 3
+    #    connectionTimeout: 5000 # ms to establish a connection
+    #    requestTimeout: 30000 # ms until response headers; uploads also get 2 s per MB
+    #    readTimeout: 30000 # ms waiting for S3 data (0 disables)
+    #    slowReaderTimeout: 300000 # ms waiting for a reader to consume data
+    #    maxSockets: 50 # per process
 
 imap:
     # Match the [aps] settings in WildDuck's imap.toml for incoming mail push notifications.

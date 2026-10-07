@@ -5,6 +5,12 @@ module.exports = {
         'mongodb',
 
         // some api changes, need to address in the future
-        'eslint', 'grunt-eslint'
+        'eslint', 'grunt-eslint',
+
+        // 3.x needs eslint 10, held back above
+        '@haraka/eslint-config',
+
+        // new major, held back in WildDuck as well
+        'ioredis'
     ]
 };

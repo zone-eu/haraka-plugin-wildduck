@@ -26,6 +26,7 @@ cp node_modules/haraka-plugin-wildduck/config/wildduck.yaml config/wildduck.yaml
 $EDITOR config/wildduck.yaml
 ```
 
+For Apple Mail push notifications on incoming messages, use a WildDuck build with XAPPLEPUSHSERVICE and APNs support. Enable `imap.aps.enabled` in `wildduck.yaml` and set `topic`, `certPath`, `keyPath`, and `sandbox` to match WildDuck's `[aps]` settings in `imap.toml`. Certificate and key paths may be absolute or relative to Haraka's configuration directory. Restart Haraka after changing these settings.
 ### S3 attachment storage
 
 WildDuck 1.52.0 adds S3 storage for deduplicated message attachment payloads. This plugin passes its `attachments` configuration directly to WildDuck. To store new attachment hashes in S3, configure Haraka's `config/wildduck.yaml` with the same S3 settings as WildDuck:

@@ -66,7 +66,7 @@ exports.load_wildduck_cfg = function () {
     this.cfg = this.config.get(
         'wildduck.yaml',
         {
-            booleans: ['attachments.decodeBase64', 'sender.enabled', 'imap.aps.enabled', 'imap.aps.sandbox']
+            booleans: ['attachments.decodeBase64', 'sender.enabled']
         },
         () => {
             this.load_wildduck_cfg();
@@ -164,9 +164,6 @@ exports.open_database = function (next, server) {
             });
 
             done();
-        }, {
-            configDirectory: plugin.config.root_path,
-            loggelf: message => plugin.loggelf(message)
         });
     };
 

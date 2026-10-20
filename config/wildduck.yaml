@@ -61,6 +61,19 @@ attachments:
     bucket: 'attachments'
     decodeBase64: true
 
+# Apple Push Notification Service for messages delivered by Haraka
+# Match WildDuck's imap.aps settings and use the same messages database.
+aps:
+    enabled: false
+    # APNs topic (UID from the Apple push certificate)
+    #topic: 'com.apple.mobilemail.push.example.com'
+    # APNs client certificate and private key (PEM)
+    # Relative paths are resolved against Haraka's config directory.
+    #certPath: 'apns.pem'
+    #keyPath: 'apns.key'
+    # Use api.sandbox.push.apple.com instead of production.
+    sandbox: false
+
 limits:
     windowSize: 3600 # 1 hour
     rcptIp: 100 # allowed messages for the same recipient from same IP during window size

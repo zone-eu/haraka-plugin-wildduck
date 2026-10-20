@@ -4,6 +4,7 @@
 process.env.DISABLE_WILD_CONFIG = 'true';
 
 const os = require('os');
+const path = require('path');
 const db = require('./lib/db');
 const DSN = require('haraka-dsn');
 const dns = require('dns');
@@ -16,6 +17,7 @@ const StreamCollect = require('./lib/stream-collect');
 const Maildropper = require('@zone-eu/wildduck/lib/maildropper');
 const FilterHandler = require('@zone-eu/wildduck/lib/filter-handler');
 const BimiHandler = require('@zone-eu/wildduck/lib/bimi-handler');
+const ApnClient = require('@zone-eu/wildduck/lib/apn-client');
 const autoreply = require('@zone-eu/wildduck/lib/autoreply');
 const wdErrors = require('@zone-eu/wildduck/lib/errors');
 const Gelf = require('gelf');
@@ -66,7 +68,7 @@ exports.load_wildduck_cfg = function () {
     this.cfg = this.config.get(
         'wildduck.yaml',
         {
-            booleans: ['attachments.decodeBase64', 'sender.enabled']
+            booleans: ['attachments.decodeBase64', 'sender.enabled', 'aps.enabled', 'aps.sandbox']
         },
         () => {
             this.load_wildduck_cfg();
@@ -138,6 +140,18 @@ exports.open_database = function (next, server) {
 
             plugin.db.messageHandler.loggelf = message => plugin.loggelf(message);
             plugin.db.userHandler.loggelf = message => plugin.loggelf(message);
+
+            const aps = { ...plugin.cfg.aps };
+            for (const key of ['certPath', 'keyPath']) {
+                if (aps[key]) {
+                    aps[key] = path.resolve(plugin.config.root_path, aps[key]);
+                }
+            }
+            plugin.db.messageHandler.notifier.apn = ApnClient.get({
+                config: aps,
+                database: db.database,
+                loggelf: message => plugin.loggelf(message)
+            });
 
             plugin.maildrop = new Maildropper({ db, ...plugin.cfg.sender });
 

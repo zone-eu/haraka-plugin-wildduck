@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.0.9](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.8...v6.0.9) (2026-10-20)
+
+
+### Bug Fixes
+
+* bump deps, add xapplepushservice ([#166](https://github.com/zone-eu/haraka-plugin-wildduck/issues/166)) ([0345311](https://github.com/zone-eu/haraka-plugin-wildduck/commit/0345311b3f11b16bed40c03c8bc921d7faa391f1))
+
 ## [6.0.8](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.7...v6.0.8) (2026-10-20)
 
 

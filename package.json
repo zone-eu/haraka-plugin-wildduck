@@ -39,7 +39,7 @@
         "npm-check-updates": "23.1.1"
     },
     "dependencies": {
-        "@zone-eu/wildduck": "1.52.1",
+        "@zone-eu/wildduck": "1.52.2",
         "gelf": "2.0.1",
         "haraka-dsn": "1.2.1",
         "ioredis": "5.11.1",
@@ -49,5 +49,8 @@
         "nodemailer": "10.1.7",
         "punycode.js": "2.3.1",
         "srs.js": "0.1.0"
+    },
+    "overrides": {
+        "@zone-eu/types": "0.1.6"
     }
 }

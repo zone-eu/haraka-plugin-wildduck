@@ -1,6 +1,6 @@
 # Changelog
 
-## [6.0.6](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.5...v6.0.6) (2026-10-20)
+## [6.0.7](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.0.5...v6.0.7) (2026-10-20)
 
 
 ### Bug Fixes

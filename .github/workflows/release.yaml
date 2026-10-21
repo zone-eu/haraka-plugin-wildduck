@@ -17,6 +17,7 @@ jobs:
 
         runs-on: ubuntu-latest
         outputs:
+            version: ${{ steps.release.outputs.version }}
             major: ${{ steps.release.outputs.major }}
             minor: ${{ steps.release.outputs.minor }}
             patch: ${{ steps.release.outputs.patch }}
@@ -51,11 +52,11 @@ jobs:
             attestations: write
             id-token: write
 
-        needs: release_please
+        needs: [release_please, publish_npm]
         if: ${{needs.release_please.outputs.release_created}}
 
         steps:
-            - run: echo version v${{needs.release_please.outputs.major}}.${{needs.release_please.outputs.minor}}.${{needs.release_please.outputs.patch}}
+            - run: echo version v${{ needs.release_please.outputs.version }}
 
             - name: Checkout repository
               uses: actions/checkout@v6
@@ -96,6 +97,8 @@ jobs:
               with:
                   context: .
                   push: true
+                  build-args: |
+                      PLUGIN_VERSION=${{ needs.release_please.outputs.version }}
                   platforms: ${{ steps.buildx.outputs.platforms }}
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}

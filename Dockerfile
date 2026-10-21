@@ -7,7 +7,8 @@ WORKDIR /app
 RUN git clone -b v3.3.2 https://github.com/haraka/Haraka.git ./
 RUN npm install --production
 
-RUN npm install haraka-plugin-wildduck
+ARG PLUGIN_VERSION=latest
+RUN npm install "haraka-plugin-wildduck@${PLUGIN_VERSION}"
 
 FROM node:lts-alpine as app
 

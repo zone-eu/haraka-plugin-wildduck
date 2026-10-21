@@ -57,9 +57,32 @@ srs:
     secret: 'secret value'
 
 attachments:
+    # Preferred backend for new attachment hashes: 'gridstore' or 's3'.
+    # Existing attachments are read from the backend recorded in MongoDB.
     type: 'gridstore'
+    # MongoDB attachment catalog/GridFS bucket, including when using S3.
     bucket: 'attachments'
     decodeBase64: true
+
+    # Required for type: 's3', and for forwarding messages with S3 attachments
+    # even when type is 'gridstore'. Match WildDuck's attachments.s3 settings.
+    # Keep the prefix stable and unique for installations sharing an S3 bucket.
+    # Without explicit credentials, the AWS SDK default credential chain is used.
+    #s3:
+    #    bucket: 'wildduck-attachments'
+    #    prefix: 'production'
+    #    region: 'us-east-1'
+    #    endpoint: 'https://s3.example.com' # optional for S3-compatible storage
+    #    forcePathStyle: false
+    #    accessKeyId: ''
+    #    secretAccessKey: ''
+    #    sessionToken: ''
+    #    maxAttempts: 3
+    #    connectionTimeout: 5000 # ms to establish a connection
+    #    requestTimeout: 30000 # ms until response headers; uploads also get 2 s per MB
+    #    readTimeout: 30000 # ms waiting for S3 data (0 disables)
+    #    slowReaderTimeout: 300000 # ms waiting for a reader that stopped taking data
+    #    maxSockets: 50 # per process
 
 # Apple Push Notification Service for messages delivered by Haraka
 # Match WildDuck's imap.aps settings and use the same messages database.

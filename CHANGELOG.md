@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.2](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.1.1...v6.1.2) (2026-10-21)
+
+
+### Bug Fixes
+
+* bump deps, fix docker workflow ([#172](https://github.com/zone-eu/haraka-plugin-wildduck/issues/172)) ([acaf35a](https://github.com/zone-eu/haraka-plugin-wildduck/commit/acaf35af8101a940078795f53acb2664238d7773))
+
 ## [6.1.1](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.1.0...v6.1.1) (2026-10-21)
 
 

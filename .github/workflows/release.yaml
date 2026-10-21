@@ -41,6 +41,28 @@ jobs:
                   registry-url: 'https://registry.npmjs.org'
             - run: npm ci
             - run: npm publish --provenance --access public
+            - name: Wait for npm package availability
+              timeout-minutes: 10
+              shell: bash
+              run: |
+                  package_spec=$(node -p "const pkg = require('./package.json'); pkg.name + '@' + pkg.version")
+
+                  for attempt in {1..30}; do
+                      echo "Checking npm availability for $package_spec (attempt $attempt/30)"
+                      if npm pack "$package_spec" --dry-run --ignore-scripts --loglevel=error \
+                          --registry=https://registry.npmjs.org --prefer-online \
+                          --fetch-retries=0 --fetch-timeout=10000 > /dev/null; then
+                          echo "$package_spec is available on npm"
+                          exit 0
+                      fi
+
+                      if [ "$attempt" -lt 30 ]; then
+                          sleep 10
+                      fi
+                  done
+
+                  echo "::error::$package_spec did not become available on npm after 30 attempts"
+                  exit 1
 
     publish_docker:
         name: Create and publish a Docker image

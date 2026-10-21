@@ -34,6 +34,41 @@ and key paths can be absolute or relative to Haraka's config directory. Restart
 Haraka after changing these settings. Clients register for notifications through
 WildDuck's IMAP XAPPLEPUSHSERVICE support.
 
+#### S3 attachment storage
+
+To store new attachment payloads in S3, set `attachments.type` to `s3` and add
+the same S3 settings used by WildDuck to `config/wildduck.yaml`:
+
+```yaml
+attachments:
+    type: 's3'
+    bucket: 'attachments' # MongoDB attachment catalog/GridFS bucket
+    decodeBase64: true
+    s3:
+        bucket: 'wildduck-attachments' # S3 bucket
+        prefix: 'production'
+        region: 'us-east-1'
+        #endpoint: 'https://s3.example.com' # S3-compatible storage
+        #forcePathStyle: true
+        #accessKeyId: '...'
+        #secretAccessKey: '...'
+```
+
+The S3 bucket and a nonempty prefix are required. Keep the prefix stable and
+unique for installations sharing a bucket. Credentials use the AWS SDK default
+credential chain unless `accessKeyId` and `secretAccessKey` are set; temporary
+credentials can also set `sessionToken`. The bundled configuration lists retry,
+timeout, and connection pool options.
+
+Messages and attachment metadata remain in MongoDB. Existing GridFS attachments
+continue to work, and existing hashes keep their recorded storage backend.
+Configure S3 access in Haraka before any process starts writing S3 attachments:
+forwarding can read stored attachments, so Haraka needs the S3 settings even
+when its own `attachments.type` is `gridstore`. Use an S3-capable WildDuck version
+and matching settings in every process that reads or writes these messages.
+Restart Haraka after changing storage settings. An S3 upload failure fails the
+delivery so the sending server can retry it.
+
 ### Notes
 
 This is the only delivery plugin you need to use Haraka with WildDuck. Make sure Haraka has no other delivery plugin(s) enabled.

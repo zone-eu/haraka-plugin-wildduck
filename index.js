@@ -68,7 +68,7 @@ exports.load_wildduck_cfg = function () {
     this.cfg = this.config.get(
         'wildduck.yaml',
         {
-            booleans: ['attachments.decodeBase64', 'sender.enabled', 'aps.enabled', 'aps.sandbox']
+            booleans: ['attachments.decodeBase64', 'attachments.s3.forcePathStyle', 'sender.enabled', 'aps.enabled', 'aps.sandbox']
         },
         () => {
             this.load_wildduck_cfg();

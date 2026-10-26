@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.5](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.1.4...v6.1.5) (2026-10-26)
+
+
+### Bug Fixes
+
+* S/MIME: Fix encryption ([#178](https://github.com/zone-eu/haraka-plugin-wildduck/issues/178)) ([13d62b5](https://github.com/zone-eu/haraka-plugin-wildduck/commit/13d62b58f3a997fc0261952173c47b00fe79f825))
+
 ## [6.1.4](https://github.com/zone-eu/haraka-plugin-wildduck/compare/v6.1.3...v6.1.4) (2026-10-21)
 
 

@@ -5,6 +5,7 @@ process.env.DISABLE_WILD_CONFIG = 'true';
 
 const os = require('os');
 const path = require('path');
+const crypto = require('crypto');
 const db = require('./lib/db');
 const DSN = require('haraka-dsn');
 const dns = require('dns');
@@ -13,6 +14,7 @@ const punycode = require('punycode.js');
 const SRS = require('srs.js');
 const counters = require('@zone-eu/wildduck/lib/counters');
 const tools = require('@zone-eu/wildduck/lib/tools');
+const SMIMEEncryptor = require('@zone-eu/smime-js');
 const StreamCollect = require('./lib/stream-collect');
 const Maildropper = require('@zone-eu/wildduck/lib/maildropper');
 const FilterHandler = require('@zone-eu/wildduck/lib/filter-handler');
@@ -43,6 +45,31 @@ const defaultSpamRejectMessage =
     'Our system has detected that this message is likely unsolicited mail.\nTo reduce the amount of spam this message has been blocked.';
 const maxDataExceededResponse = '550 Message too big!';
 
+const initializeSmime = plugin => {
+    let pkcs1v15Available = false;
+    try {
+        const { publicKey } = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
+        const probeCiphertext = crypto.publicEncrypt(
+            { key: publicKey, padding: crypto.constants.RSA_PKCS1_PADDING },
+            Buffer.from('smime-probe')
+        );
+        pkcs1v15Available = !!(probeCiphertext && probeCiphertext.length);
+    } catch {
+        // OpenSSL can disable RSA PKCS#1 v1.5 encryption.
+    }
+
+    SMIMEEncryptor.pkcs1v15Available = pkcs1v15Available;
+    if (pkcs1v15Available) {
+        plugin.loginfo('S/MIME RSA PKCS#1 v1.5 key transport is available (OpenSSL ' + process.versions.openssl + ')');
+    } else {
+        plugin.logwarn(
+            'S/MIME RSA PKCS#1 v1.5 key transport is unavailable (OpenSSL ' +
+                process.versions.openssl +
+                '). Use OAEP key transport or enable the OpenSSL legacy provider.'
+        );
+    }
+};
+
 const getMessageSubject = txn => {
     let subject = (txn?.header?.get('Subject') || '').toString();
     try {
@@ -56,6 +83,7 @@ const getMessageSubject = txn => {
 exports.register = function () {
     const plugin = this;
     plugin.logdebug('Initializing WildDuck plugin.');
+    initializeSmime(plugin);
     plugin.load_wildduck_cfg();
 
     plugin.register_hook('init_master', 'open_database');
@@ -891,6 +919,9 @@ exports.real_rcpt_handler = function (next, connection, params) {
                         encryptMessages: true,
                         encryptForwarded: true,
                         pubKey: true,
+                        smimeCerts: true,
+                        smimeCipher: true,
+                        smimeKeyTransport: true,
                         spamLevel: true,
                         storageUsed: true,
                         quota: true,
